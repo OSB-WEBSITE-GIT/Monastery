@@ -2520,5 +2520,51 @@
    },
    "sort": 10
   }
+ ],
+ "verses": [
+  {
+   "id": "c6f99680-9e26-5587-be80-0d7b7aff9b1a",
+   "text": {
+    "en": "It is high time for us to arise from sleep."
+   },
+   "reference": {
+    "en": "Romans 13:11 · Prologue of the Rule of St. Benedict"
+   },
+   "sort": 10,
+   "published": true
+  },
+  {
+   "id": "4e0b4fc3-80d0-5cef-b02d-9f2d70b83fff",
+   "text": {
+    "en": "If you hear his voice today, do not harden your hearts."
+   },
+   "reference": {
+    "en": "Psalm 95:8 · Prologue of the Rule of St. Benedict"
+   },
+   "sort": 20,
+   "published": true
+  },
+  {
+   "id": "2658fa40-f0ec-59c2-8e34-f4cc6ec2a621",
+   "text": {
+    "en": "Sustain me, O Lord, according to your promise, that I may live; and do not disappoint me in my hope."
+   },
+   "reference": {
+    "en": "Psalm 119:116 · the Suscipe, Rule of St. Benedict, ch. 58"
+   },
+   "sort": 30,
+   "published": true
+  },
+  {
+   "id": "ff215ac3-6f4a-5465-8ca3-564f23734413",
+   "text": {
+    "en": "Seven times a day have I praised you."
+   },
+   "reference": {
+    "en": "Psalm 119:164 · Rule of St. Benedict, ch. 16"
+   },
+   "sort": 40,
+   "published": true
+  }
  ]
 }
