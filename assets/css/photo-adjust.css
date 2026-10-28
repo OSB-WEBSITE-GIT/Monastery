@@ -1,0 +1,23 @@
+/* Adjust Photo dialog (assets/js/photo-adjust.js). Uses the editor's neutral tool palette. */
+.pa-wrap{position:fixed;inset:0;z-index:85;background:rgba(15,20,28,.55);display:grid;place-items:center;padding:12px;font-family:var(--f-ui);font-size:14px;line-height:1.4;color:var(--ui-ink)}
+.pa{background:var(--ui-bg);border-radius:14px;width:min(64rem,100%);max-height:94vh;overflow:auto;padding:20px;display:grid;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.pa-head h2{font-size:19px;font-weight:650;margin:0}
+.pa-head p{margin:4px 0 0;color:var(--ui-soft);max-width:48rem}
+.pa-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,14rem);gap:16px;align-items:start}
+.pa-body:has(.pa-main:only-child){grid-template-columns:minmax(0,1fr)}
+@media (max-width:720px){.pa-body{grid-template-columns:1fr}}
+.pa-main,.pa-prev{display:grid;gap:6px;min-width:0}
+.pa-previews{display:grid;gap:14px}
+.pa-frame{position:relative;overflow:hidden;width:100%;background:#e9edf1;border-radius:6px;outline:1px solid var(--ui-line)}
+.pa-frame img{display:block;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.pa-stage{cursor:grab;touch-action:none}
+.pa-stage.dragging{cursor:grabbing}
+.pa-stage:focus-visible{outline:3px solid var(--ui-blue);outline-offset:2px}
+.pa-band{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,.25));border-top:1px dashed rgba(255,255,255,.8);pointer-events:none}
+.pa-band::after{content:"Headline";position:absolute;left:10px;bottom:8px;color:#fff;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.9}
+.pa-cap{font-size:12.5px;color:var(--ui-soft)}
+.pa-controls{display:grid;gap:10px}
+.pa-zoom{display:flex;align-items:center;gap:12px;max-width:28rem}
+.pa-zoom input{flex:1}
+.pa-warn{margin:0;color:#7a4b00;background:#fff4dd;border:1px solid #f0d49a;border-radius:8px;padding:8px 12px}
+.pa-actions{display:flex;flex-wrap:wrap;gap:8px}
