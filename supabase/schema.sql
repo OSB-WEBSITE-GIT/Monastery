@@ -231,11 +231,31 @@ create table if not exists public.media_items (
 );
 create index if not exists media_album_idx on public.media_items(album_id, sort);
 
+-- Welcome verses: one is shown at random on the welcome screen (a visitor's first visit each day)
+create table if not exists public.verses (
+  id          uuid primary key default gen_random_uuid(),
+  text        jsonb not null default '{}'::jsonb,   -- {"en": "...", "ml": "..."}
+  reference   jsonb not null default '{}'::jsonb,   -- e.g. {"en": "Psalm 119:164 · Rule of St. Benedict, ch. 16"}
+  sort        int  not null default 0,
+  published   boolean not null default true,
+  updated_at  timestamptz not null default now(),
+  updated_by  uuid
+);
+-- starting verses (added only while the list is empty)
+insert into public.verses (text, reference, sort)
+select v.t, v.r, v.s from (values
+  ('{"en":"It is high time for us to arise from sleep."}'::jsonb, '{"en":"Romans 13:11 · Prologue of the Rule of St. Benedict"}'::jsonb, 10),
+  ('{"en":"If you hear his voice today, do not harden your hearts."}'::jsonb, '{"en":"Psalm 95:8 · Prologue of the Rule of St. Benedict"}'::jsonb, 20),
+  ('{"en":"Sustain me, O Lord, according to your promise, that I may live; and do not disappoint me in my hope."}'::jsonb, '{"en":"Psalm 119:116 · the Suscipe, Rule of St. Benedict, ch. 58"}'::jsonb, 30),
+  ('{"en":"Seven times a day have I praised you."}'::jsonb, '{"en":"Psalm 119:164 · Rule of St. Benedict, ch. 16"}'::jsonb, 40)
+) v(t, r, s)
+where not exists (select 1 from public.verses);
+
 -- updated_at / updated_by triggers
 do $$
 declare t text;
 begin
-  foreach t in array array['site_settings','menu_items','sections','section_items','horarium','events','posts','albums','media_items'] loop
+  foreach t in array array['site_settings','menu_items','sections','section_items','horarium','events','posts','albums','media_items','verses'] loop
     execute format('drop trigger if exists %I_touch on public.%I', t, t);
     execute format('create trigger %I_touch before insert or update on public.%I for each row execute function public.touch_row()', t, t);
   end loop;
@@ -254,6 +274,7 @@ alter table public.events        enable row level security;
 alter table public.posts         enable row level security;
 alter table public.albums        enable row level security;
 alter table public.media_items   enable row level security;
+alter table public.verses        enable row level security;
 
 -- profiles: each user reads their own; admins read and manage all
 drop policy if exists profiles_self_read  on public.profiles;
@@ -279,7 +300,7 @@ declare
 begin
   for t, flag in select * from (values
       ('sections','visible'), ('horarium','visible'),
-      ('events','published'), ('posts','published'), ('albums','published')) v(t, flag)
+      ('events','published'), ('posts','published'), ('albums','published'), ('verses','published')) v(t, flag)
   loop
     execute format('drop policy if exists %I_read on public.%I', t, t);
     execute format('drop policy if exists %I_edit on public.%I', t, t);
@@ -370,7 +391,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['site_settings','menu_items','sections','section_items','horarium','events','posts','albums','media_items','profiles'] loop
+  foreach t in array array['site_settings','menu_items','sections','section_items','horarium','events','posts','albums','media_items','verses','profiles'] loop
     execute format('drop trigger if exists %I_history on public.%I', t, t);
     execute format('create trigger %I_history after update or delete on public.%I for each row execute function public.record_history()', t, t);
   end loop;
@@ -406,7 +427,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['site_settings','menu_items','sections','section_items','horarium','events','posts','albums','media_items'] loop
+  foreach t in array array['site_settings','menu_items','sections','section_items','horarium','events','posts','albums','media_items','verses'] loop
     execute format('drop trigger if exists %I_version on public.%I', t, t);
     execute format('create trigger %I_version after insert or update or delete on public.%I for each statement execute function public.bump_content_version()', t, t);
     execute format('drop trigger if exists %I_version_truncate on public.%I', t, t);
@@ -418,3 +439,6 @@ alter table public.site_meta enable row level security;
 drop policy if exists site_meta_read on public.site_meta;
 create policy site_meta_read on public.site_meta for select using (true);
 grant select on public.site_meta to anon, authenticated;
+
+-- Running this file changes the database layout, so tell visitors' browsers to fetch fresh content.
+update public.site_meta set content_version = content_version + 1, changed_at = now() where id = 1;
