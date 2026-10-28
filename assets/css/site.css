@@ -22,7 +22,7 @@
   --f-label:"Cinzel","Noto Serif Malayalam",Georgia,serif;
   --f-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Malayalam",sans-serif;
   /* Heading box on photos: how solid the menu-colour box is (100% = solid, 50% = half see-through). */
-  --box-opacity:65%;
+  --box-opacity:95%;
   --emblem-opacity:.65; --wrap:74rem;
   /* editor chrome — fixed, independent of the site palette */
   --ui-bg:#ffffff; --ui-ink:#1d232b; --ui-soft:#5b6572; --ui-line:#dde2e8; --ui-blue:#1f5fbf; --ui-red:#b3261e; --ui-green:#1e7a46; --ui-panel:#f5f7fa;
