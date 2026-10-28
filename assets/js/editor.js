@@ -90,13 +90,13 @@
     if (!role()) return;
     const b = document.createElement("div"); b.id = "cms-bar"; b.setAttribute("role", "toolbar"); b.setAttribute("aria-label", "Editing tools");
     b.innerHTML = `<span class="cms-badge">${esc(role())}${OSB.store.mode === "demo" ? " · demo" : ""}</span>
-      <button type="button" class="cms-btn ${S.editing ? "on" : ""}" id="cms-toggle" aria-pressed="${S.editing}">${S.editing ? "✓ Editing page" : "✎ Edit page"}</button>
+      <button type="button" class="cms-btn ${S.editing ? "on" : ""}" id="cms-toggle" aria-pressed="${S.editing}">${S.editing ? "✓ Done editing" : "✎ Edit page"}</button>
       <button type="button" class="cms-btn" id="cms-dash">☰ Dashboard</button>
       <span class="cms-lang">Editing in <strong>${S.lang === "ml" ? "Malayalam" : "English"}</strong></span>
       ${OSB.store.mode === "demo" ? `<button type="button" class="cms-btn link" id="cms-reset">Reset demo</button>` : ""}
       <button type="button" class="cms-btn link" id="cms-out">Sign out</button>`;
     document.body.appendChild(b);
-    $("#cms-toggle").onclick = () => { S.editing = !S.editing; document.body.classList.toggle("cms-editing", S.editing); OSB.render(); bar(); if (S.editing) toast("Click any text to change it. Changes save automatically."); };
+    $("#cms-toggle").onclick = () => { S.editing = !S.editing; document.body.classList.toggle("cms-editing", S.editing); OSB.render(); bar(); if (S.editing) toast("Click any text to change it, then click Save. Cancel puts it back."); };
     $("#cms-dash").onclick = () => dashboard();
     $("#cms-out").onclick = signOut;
     const r = $("#cms-reset"); if (r) r.onclick = async () => { if (await confirmBox("Reset the demo? All changes made in this browser will be lost.", "Reset")) { await OSB.store.reset(); S.user = await OSB.store.user(); await OSB.reload(); bar(); toast("Demo reset"); } };
@@ -128,10 +128,10 @@
     const row = rowOf(table, id); if (!row) return;
     if (table === "site_settings") {
       const v = JSON.parse(JSON.stringify(row.value)); v[field] = Object.assign({}, v[field] || {}, { [S.lang]: value });
-      const saved = await run(() => OSB.store.update(table, id, { value: v }), "Saved"); if (saved) row.value = saved.value;
+      const saved = await run(() => OSB.store.update(table, id, { value: v }), "Saved"); if (saved) row.value = saved.value; return !!saved;
     } else {
       const obj = Object.assign({}, row[field] || {}, { [S.lang]: value });
-      const saved = await run(() => OSB.store.update(table, id, { [field]: obj }), "Saved"); if (saved) row[field] = saved[field];
+      const saved = await run(() => OSB.store.update(table, id, { [field]: obj }), "Saved"); if (saved) row[field] = saved[field]; return !!saved;
     }
   }
   function readEl(el, mode) {
@@ -166,8 +166,85 @@
     m.el.querySelector("#lk").onsubmit = (e) => { e.preventDefault(); const u = m.el.querySelector("#lk-url").value.trim(); m.close();
       if (range) { sel.removeAllRanges(); sel.addRange(range); } if (u) document.execCommand("createLink", false, u); };
   }
+  /* Text being edited is saved only with Save (or Enter on a one-line text), and put back with Cancel (or Esc).
+     While a change is unsaved, the rest of the page is locked so it can't be lost or saved by accident. */
+  let ebar, active = null; // active = { el, before, mode, table, id, field }
+  const dirtyNow = () => !!(active && readEl(active.el, active.mode) !== active.before);
+  OSB.hasUnsavedEdit = dirtyNow;
+  function editBar() {
+    if (ebar) return ebar;
+    ebar = document.createElement("div"); ebar.id = "cms-ebar"; ebar.hidden = true; ebar.setAttribute("role", "toolbar"); ebar.setAttribute("aria-label", "Save or cancel this change");
+    ebar.innerHTML = `<span class="cms-ebar-note" aria-live="polite"></span><button type="button" class="cms-btn primary" data-save>✓ Save</button><button type="button" class="cms-btn" data-cancel>✕ Cancel</button>`;
+    ebar.addEventListener("mousedown", (e) => e.preventDefault()); // keep the cursor in the text
+    ebar.querySelector("[data-save]").onclick = () => commit();
+    ebar.querySelector("[data-cancel]").onclick = () => cancel();
+    document.body.appendChild(ebar); return ebar;
+  }
+  function placeBars() {
+    if (!active) return;
+    const r = active.el.getBoundingClientRect(), b = editBar();
+    b.style.top = `${r.bottom + window.scrollY + 8}px`;
+    b.style.left = `${Math.max(8, Math.min(r.left + window.scrollX, window.scrollX + document.documentElement.clientWidth - b.offsetWidth - 8))}px`;
+    if (active.mode === "rich" && rtb) { rtb.style.top = `${Math.max(8, r.top + window.scrollY - 44)}px`; rtb.style.left = `${Math.max(8, r.left + window.scrollX)}px`; }
+  }
+  // Keep the text and its Save / Cancel bar clear of the editing bar at the bottom of the screen.
+  function keepInView() {
+    if (!active) return;
+    const r = active.el.getBoundingClientRect(), cb = $("#cms-bar");
+    const bottomLimit = (cb ? cb.getBoundingClientRect().top : window.innerHeight) - 12;
+    const need = r.bottom + 56 - bottomLimit; // 56 = Save bar height and gap
+    if (need > 0) window.scrollBy({ top: Math.min(need, Math.max(0, r.top - 90)) });
+    else if (r.top < 70) window.scrollBy({ top: r.top - 90 });
+  }
+  function showBar() {
+    const b = editBar(), d = dirtyNow();
+    b.hidden = false; b.classList.toggle("dirty", d);
+    b.querySelector(".cms-ebar-note").textContent = d ? "Not saved yet" : (active.mode === "rich" ? "Editing" : "Editing · Enter saves");
+    active.el.classList.toggle("cms-dirty", d); placeBars();
+  }
+  function finish() {
+    if (!active) return;
+    active.el.classList.remove("cms-active", "cms-dirty");
+    const el = active.el; active = null;
+    if (ebar) ebar.hidden = true; if (rtb) rtb.hidden = true;
+    if (document.activeElement === el) el.blur();
+  }
+  async function commit() {
+    if (!active) return;
+    const a = active, now = readEl(a.el, a.mode);
+    if (now === a.before) return finish();
+    const btn = editBar().querySelector("[data-save]"); btn.disabled = true;
+    const ok = await saveField(a.table, a.id, a.field, now);
+    btn.disabled = false;
+    if (!ok) return showBar(); // keep the text; the error message says what went wrong
+    a.el.classList.remove("is-fallback"); a.el.classList.toggle("is-empty", !plain(now));
+    finish();
+  }
+  function cancel() {
+    if (!active) return;
+    const a = active; a.el.innerHTML = a.mode === "text" ? esc(a.before) : a.before;
+    a.el.classList.toggle("is-empty", !plain(a.before)); finish();
+  }
+  let nudged = 0;
+  function nudge() {
+    if (!active) return;
+    keepInView(); showBar(); const b = editBar(); b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
+    if (Date.now() - nudged > 2500) { nudged = Date.now(); toast("Save or cancel your change first.", "warn"); }
+  }
+  // Lock the rest of the page while a change is unsaved.
+  document.addEventListener("click", (e) => {
+    if (!dirtyNow()) return;
+    const t = e.target;
+    if (active.el.contains(t) || (ebar && ebar.contains(t)) || (rtb && rtb.contains(t)) || t.closest(".cms-modal-wrap, #cms-toasts")) return;
+    e.preventDefault(); e.stopPropagation(); nudge();
+  }, true);
+  window.addEventListener("beforeunload", (e) => { if (dirtyNow()) { e.preventDefault(); e.returnValue = ""; } });
+  window.addEventListener("resize", placeBars);
+  window.addEventListener("scroll", () => { if (active && active.mode === "rich") placeBars(); }, { passive: true });
+
   function bindInline() {
     try { document.execCommand("defaultParagraphSeparator", false, "p"); } catch (e) {}
+    if (active && !document.body.contains(active.el)) { active = null; if (ebar) ebar.hidden = true; if (rtb) rtb.hidden = true; }
     $$("[data-e]").forEach((el) => {
       const [table, id, field, mode] = el.dataset.e.split("|");
       if (!canEdit(table)) return;
@@ -175,23 +252,29 @@
       if (mode === "text" && el.contentEditable !== "plaintext-only") el.setAttribute("contenteditable", "true");
       el.setAttribute("spellcheck", "true");
       el.dataset.ph = `Empty — click to write (${S.lang === "ml" ? "Malayalam" : "English"})`;
-      let before = readEl(el, mode);
       el.addEventListener("focus", () => {
-        before = readEl(el, mode);
+        if (active && active.el !== el) {
+          if (dirtyNow()) { el.blur(); active.el.focus(); nudge(); return; }
+          finish();
+        }
+        if (!active) active = { el, before: readEl(el, mode), mode, table, id, field };
+        el.classList.add("cms-active");
         if (el.classList.contains("is-fallback")) el.title = "Showing English because the Malayalam text is missing. What you type here is saved as Malayalam.";
-        if (mode === "rich") { const t = richToolbar(); const r = el.getBoundingClientRect(); t.hidden = false; t.style.top = `${Math.max(8, r.top + window.scrollY - 44)}px`; t.style.left = `${Math.max(8, r.left + window.scrollX)}px`; }
+        if (mode === "rich") richToolbar().hidden = false;
+        keepInView(); showBar();
       });
+      el.addEventListener("input", () => { if (active && active.el === el) { showBar(); keepInView(); placeBars(); } });
       el.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && mode !== "rich" && !(mode === "inline" && e.shiftKey)) { e.preventDefault(); el.blur(); }
-        if (e.key === "Escape") { el.innerHTML = mode === "text" ? esc(before) : before; el.blur(); }
+        if (e.key === "Enter" && (mode !== "rich" ? !(mode === "inline" && e.shiftKey) : (e.ctrlKey || e.metaKey))) { e.preventDefault(); commit(); }
+        if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); cancel(); }
       });
       el.addEventListener("paste", (e) => { if (mode !== "rich") { e.preventDefault(); document.execCommand("insertText", false, (e.clipboardData || window.clipboardData).getData("text/plain")); } });
-      el.addEventListener("blur", async () => {
-        if (rtb) rtb.hidden = true;
-        const now = readEl(el, mode);
-        if (now === before) return;
-        before = now; el.classList.remove("is-fallback"); el.classList.toggle("is-empty", !plain(now));
-        await saveField(table, id, field, now);
+      // Clicking away never saves. An unchanged text simply closes; a changed one stays open with Save / Cancel.
+      el.addEventListener("blur", () => {
+        setTimeout(() => {
+          if (!active || active.el !== el || document.activeElement === el || $(".cms-modal-wrap")) return;
+          if (dirtyNow()) showBar(); else finish();
+        }, 0);
       });
     });
     $$("[data-img]").forEach((im) => {
