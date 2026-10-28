@@ -21,6 +21,8 @@
   --f-body:"Crimson Pro","Noto Serif Malayalam",Georgia,serif;
   --f-label:"Cinzel","Noto Serif Malayalam",Georgia,serif;
   --f-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Malayalam",sans-serif;
+  /* Heading box on photos: how solid the menu-colour box is (100% = solid, 50% = half see-through). */
+  --box-opacity:65%;
   --emblem-opacity:.65; --wrap:74rem;
   /* editor chrome — fixed, independent of the site palette */
   --ui-bg:#ffffff; --ui-ink:#1d232b; --ui-soft:#5b6572; --ui-line:#dde2e8; --ui-blue:#1f5fbf; --ui-red:#b3261e; --ui-green:#1e7a46; --ui-panel:#f5f7fa;
@@ -99,13 +101,10 @@ section.block.band{background:var(--band);border-bottom-color:transparent}
 .hero{padding-block:clamp(1.25rem,3vw,2rem) clamp(2.5rem,5vw,3.5rem);border-bottom:1px solid var(--rule)}
 /* Photo frame and headline band. Frame shape comes from assets/js/photo.js; the band may cover at most --ph-band of it. */
 .hero-fig{margin:0;position:relative;border:1px solid var(--rule)}
-.hero-band{position:absolute;left:0;right:0;bottom:0;max-height:calc(var(--ph-band,.3) * 100%);overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:.35rem;padding:clamp(.8rem,2.2vw,1.6rem) clamp(1rem,3vw,2rem);background:linear-gradient(to top,rgba(12,9,6,.72),rgba(12,9,6,.38) 70%,rgba(12,9,6,0));color:#fff}
-.hero-band .label{color:#f1dcae}
-.hero-band h1{font-size:clamp(1.35rem,2.6vw,2.3rem);color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.35);max-width:44rem}
 .hero-text{display:grid;gap:1rem;padding-top:1.1rem;max-width:44rem}
 .hero-text .rich{color:var(--ink-soft);font-size:1.08rem}
 .hero-text .cta-row{margin-top:0}
-@media (max-width:679px){.hero-band{position:static;max-height:none;background:none;color:var(--ink);padding:1rem 0 0}.hero-band .label{color:var(--accent)}.hero-band h1{color:var(--ink);text-shadow:none;font-size:clamp(1.5rem,6vw,2rem)}.hero-fig{border:0}.hero-fig>.ph{border:1px solid var(--rule)}}
+@media (max-width:679px){.hero-fig{border:0}.hero-fig .ph{border:1px solid var(--rule)}}
 .hero .caption{font-size:.85rem;color:var(--ink-soft);font-style:italic;padding-top:.5rem}
 .btn{display:inline-flex;align-items:center;gap:.5rem;justify-self:start;font-family:var(--f-label);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--accent-ink);background:var(--accent);padding:.8rem 1.3rem;border:1px solid var(--accent);cursor:pointer}
 .btn.ghost{background:none;color:var(--ink);border-color:var(--rule)}
@@ -129,10 +128,13 @@ html[lang="ml"] .tile .t{font-family:"Noto Serif Malayalam",serif;font-size:1.02
 .story-banner{margin:0 0 clamp(1.5rem,3vw,2.25rem)}
 .story-banner .ph{border:1px solid var(--rule)}
 .banner-frame{position:relative}
-.banner-title{position:absolute;top:20px;left:20px;z-index:2;margin:0;max-width:min(76%,40rem);padding:.65rem 1.2rem .75rem;background:color-mix(in srgb,var(--hl) 80%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--hl-ink);font-size:clamp(1.25rem,2.6vw,2.1rem);line-height:1.15;text-wrap:balance}
+.banner-title{position:absolute;top:20px;left:20px;z-index:2;margin:0;max-width:min(76%,40rem);padding:.65rem 1.2rem .75rem;background:color-mix(in srgb,var(--hl) var(--box-opacity),transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--hl-ink);font-size:clamp(1.25rem,2.6vw,2.1rem);line-height:1.15;text-wrap:pretty}
 @media (max-width:679px){.banner-title{top:12px;left:12px;max-width:calc(100% - 24px);padding:.5rem .8rem .55rem;font-size:1.15rem}}
 .story-banner + .story, .head + .story-banner{margin-top:0}
 .cms-editing .banner-title{top:56px}
+.hero-head{margin-bottom:1rem}
+.hero-title{font-size:clamp(1.35rem,2.8vw,2.4rem);max-width:calc(100% - 40px)}
+@media (max-width:679px){.hero-title{font-size:1.3rem;max-width:calc(100% - 24px)}}
 .story-banner figcaption{font-size:.85rem;font-style:italic;color:var(--ink-soft);padding-top:.5rem}
 .story figcaption{font-size:.85rem;font-style:italic;color:var(--ink-soft);padding-top:.5rem}
 .story .rich>p:first-child::first-letter{font-family:var(--f-display);float:left;font-size:4.2rem;line-height:.8;padding:.35rem .5rem 0 0;color:var(--accent)}
