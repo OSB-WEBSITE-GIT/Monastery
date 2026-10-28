@@ -1,0 +1,46 @@
+# Every morning: wakes the free database, saves a snapshot of the public content, and copies uploaded photos
+# into the website, so the site stays readable even if the database is ever unavailable.
+# Uses only the public address and key in assets/js/config.js. If the database does not answer,
+# this job fails and GitHub e-mails the repository owner.
+name: Daily snapshot
+
+on:
+  schedule:
+    - cron: "17 2 * * *"   # every day at 07:47 India time
+  workflow_dispatch:        # can also be run by hand: Actions → Daily snapshot → Run workflow
+
+permissions:
+  contents: write           # to save the snapshot and photo copies
+  actions: write            # to re-enable this job (last step)
+
+concurrency: { group: daily-snapshot, cancel-in-progress: false }
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+
+      - name: Check the database and save the snapshot
+        run: node .github/scripts/snapshot.mjs .
+
+      - name: Save changes to the website
+        run: |
+          git add -A assets/data assets/img/mirror assets/vendor 2>/dev/null || true
+          if git diff --cached --quiet; then echo "Nothing new to save."; exit 0; fi
+          git config user.name "daily-snapshot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "Daily snapshot of website content"
+          git push
+
+      - name: Stop GitHub from switching this job off after 60 quiet days
+        if: github.event_name == 'schedule'
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          if [ "$(date -u +%u)" = "7" ]; then
+            curl --silent --show-error -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/workflows/daily-snapshot.yml/enable" || true
+          fi
