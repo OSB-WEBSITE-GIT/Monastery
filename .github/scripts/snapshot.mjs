@@ -10,7 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = path.resolve(process.argv[2] || ".");
-const TABLES = ["site_settings", "menu_items", "sections", "section_items", "horarium", "events", "posts", "albums", "media_items"];
+const TABLES = ["site_settings", "menu_items", "sections", "section_items", "horarium", "events", "posts", "albums", "media_items", "verses"];
 const LIB = { file: "assets/vendor/supabase-js-2.45.4.js", url: "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" };
 
 const cfgText = fs.readFileSync(path.join(ROOT, "assets/js/config.js"), "utf8");
@@ -47,7 +47,7 @@ console.log("Database answered. Content version", version);
 const old = readJSON("assets/data/snapshot.json");
 const db = {};
 for (const t of TABLES) db[t] = await getJSON(`/rest/v1/${t}?select=*`);
-if (!old || old.version !== version) {
+if (!old || old.version !== version || TABLES.some((t) => !(old.db && t in old.db))) {
   write("assets/data/snapshot.json", JSON.stringify({ version, generated_at: new Date().toISOString(), db }));
   console.log("Snapshot updated.");
 } else console.log("Content unchanged since the last snapshot.");
