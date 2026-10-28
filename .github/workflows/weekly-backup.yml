@@ -1,0 +1,38 @@
+# Every Sunday: a complete, encrypted backup of the website's database and photos.
+# Download it from Actions → Weekly backup → (a run) → Artifacts. Kept for 90 days (about 13 backups).
+# The file is encrypted with the BACKUP_PASSWORD secret; open it with 7-Zip and that password.
+# Restoring: see RECOVERY.md.
+name: Weekly backup
+
+on:
+  schedule:
+    - cron: "41 20 * * 6"   # every Sunday at 02:11 India time
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make the backup
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSWORD: ${{ secrets.BACKUP_PASSWORD }}
+          # PostgreSQL 17 tools in a container, so they match the database's version
+          PG_DUMP: docker run --rm --network host -v /tmp:/tmp postgres:17 pg_dump
+          PSQL: docker run --rm --network host -v /tmp:/tmp postgres:17 psql
+        run: |
+          command -v 7z >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq p7zip-full)
+          bash .github/scripts/backup.sh . backup-out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: website-backup
+          path: backup-out/*.7z
+          retention-days: 90
+          if-no-files-found: error
