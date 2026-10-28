@@ -3,10 +3,10 @@
    - DemoStore: offline demo seeded from assets/data/seed.json; changes stay in this browser only. */
 (function () {
   const OSB = (window.OSB = window.OSB || {});
-  const TABLES = ["site_settings", "menu_items", "sections", "section_items", "horarium", "events", "posts", "albums", "media_items"];
+  const TABLES = ["site_settings", "menu_items", "sections", "section_items", "horarium", "events", "posts", "albums", "media_items", "verses"];
   const PK = (t) => (t === "site_settings" ? "key" : "id");
   /* Restoring a group of deleted rows: parents before children. */
-  const RESTORE_ORDER = ["site_settings", "sections", "albums", "menu_items", "section_items", "media_items", "horarium", "events", "posts", "profiles"];
+  const RESTORE_ORDER = ["site_settings", "sections", "albums", "menu_items", "section_items", "media_items", "horarium", "events", "posts", "verses", "profiles"];
   function restoreSequence(entries) {
     return [...entries].sort((a, b) => {
       const d = RESTORE_ORDER.indexOf(a.table_name) - RESTORE_ORDER.indexOf(b.table_name);
@@ -15,7 +15,7 @@
       return 0;
     });
   }
-  const ORDER = { menu_items: "sort", sections: "sort", section_items: "sort", horarium: "sort", albums: "sort", media_items: "sort", events: "starts_on", posts: "published_on" };
+  const ORDER = { menu_items: "sort", sections: "sort", section_items: "sort", horarium: "sort", albums: "sort", media_items: "sort", events: "starts_on", posts: "published_on", verses: "sort" };
 
   function friendly(err) {
     const m = (err && (err.message || err.error_description || String(err))) || "Something went wrong";
@@ -143,7 +143,7 @@
   }
 
   /* ---------------- Demo (offline) ---------------- */
-  const KEY = "osb-cms-demo-v7", UKEY = "osb-cms-demo-user";
+  const KEY = "osb-cms-demo-v8", UKEY = "osb-cms-demo-user";
   const mem = {};
   const ls = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return mem[k] ?? null; } },
@@ -191,7 +191,7 @@
         let rows = JSON.parse(JSON.stringify(this.db[t] || []));
         if (!editor) {
           if (["menu_items", "sections", "section_items", "horarium"].includes(t)) rows = rows.filter((r) => r.visible !== false);
-          if (["events", "posts", "albums"].includes(t)) rows = rows.filter((r) => r.published !== false);
+          if (["events", "posts", "albums", "verses"].includes(t)) rows = rows.filter((r) => r.published !== false);
         }
         const o = ORDER[t];
         if (o) rows.sort((a, b) => (a[o] > b[o] ? 1 : a[o] < b[o] ? -1 : 0));

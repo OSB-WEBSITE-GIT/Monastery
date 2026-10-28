@@ -8,7 +8,7 @@
    Signed-in editors and the offline demo always use live data. */
 (function () {
   const OSB = (window.OSB = window.OSB || {});
-  const KEY = "osb-content-cache-v1";
+  const KEY = "osb-content-cache-v2";
   const SNAPSHOT = "assets/data/snapshot.json", MIRROR = "assets/data/mirror.json";
   const VERSION_TIMEOUT_MS = 6000;
 

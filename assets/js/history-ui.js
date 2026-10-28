@@ -13,7 +13,7 @@
     days: "Days", is_prayer: "Prayer", note: "Note", description: "Description", location: "Place", category: "Type", starts_on: "Date", ends_on: "End date",
     repeats_yearly: "Repeats yearly", time_label: "Time", excerpt: "Summary", cover_url: "Cover photo", published_on: "Date", pinned: "Pinned", caption: "Caption",
     url: "Photo", youtube_id: "Video", kind: "Type", slug: "Link name", target: "Link", parent_id: "Menu position", value: "Settings", role: "Role", full_name: "Name" };
-  const TABLE = { sections: "Section", section_items: "Item", menu_items: "Menu link", horarium: "Timetable entry", events: "Event", posts: "News post", albums: "Album",
+  const TABLE = { sections: "Section", section_items: "Item", menu_items: "Menu link", horarium: "Timetable entry", events: "Event", posts: "News post", albums: "Album", verses: "Welcome verse",
     media_items: "Photo or video", site_settings: "Site settings", profiles: "User" };
 
   function titleOf(table, r) {

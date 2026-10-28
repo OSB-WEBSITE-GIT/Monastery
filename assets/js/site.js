@@ -105,13 +105,11 @@
      30% of the photo's height (SLOTS.hero.band). The text and button follow below the photo. */
   R.hero = (s) => `
     <div class="hero" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">
-      <figure class="hero-fig">
+      ${tr(s.eyebrow).v ? `<div class="head hero-head">${T("span", "sections", s.id, "eyebrow", s.eyebrow, "label")}</div>` : ""}
+      <figure class="hero-fig"><div class="banner-frame">
         ${PH("hero", "sections", s.id, "image_url", s.image_url, tr(s.image_caption).v, true)}
-        <div class="hero-band">
-          ${T("span", "sections", s.id, "eyebrow", s.eyebrow, "label")}
-          ${T("h1", "sections", s.id, "title", s.title)}
-        </div>
-      </figure>
+        ${tr(s.title).v ? T("h1", "sections", s.id, "title", s.title, "banner-title hero-title") : ""}
+      </div></figure>
       ${T("p", "sections", s.id, "image_caption", s.image_caption, "caption")}
       <div class="hero-text">${T("div", "sections", s.id, "body", s.body, "", "rich")}${cta(s)}</div>
       ${tilesAfterHero()}
@@ -427,6 +425,7 @@
       wire();
       document.getElementById("boot").remove();
       document.getElementById("app").hidden = false;
+      if (OSB.Welcome) { try { OSB.Welcome.maybeShow({ db: S.db, lang: S.lang, user: S.user, emblem: setting("site").emblem_url }); } catch (e) { console.warn(e); } }
       if (OSB.editorInit) OSB.editorInit();
     } catch (err) {
       console.error(err);
