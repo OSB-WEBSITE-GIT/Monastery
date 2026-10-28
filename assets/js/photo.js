@@ -17,7 +17,7 @@
   /* ratio: width / height per device (null = show the whole photo, never trimmed).
      min: smallest acceptable longer side in px, after zoom. band: share of the frame's height that text may cover. */
   const SLOTS = {
-    hero:     { label: "Main photo at the top", ratio: { phone: 4 / 3, tablet: 3 / 2, laptop: 16 / 9 }, min: 1200, band: 0.30,
+    hero:     { label: "Main photo at the top", ratio: { phone: 4 / 3, tablet: 3 / 2, laptop: 16 / 9 }, min: 1200, band: 0,
                 sizes: "(max-width: 680px) 100vw, min(100vw, 1200px)" },
     section:  { label: "Section photo above the text", ratio: { phone: 4 / 3, tablet: 16 / 9, laptop: 21 / 9 }, min: 1200, sizes: "(max-width: 680px) 100vw, min(100vw, 1200px)" },
     sectionSide: { label: "Section photo beside the text", ratio: { phone: 4 / 3, tablet: 4 / 3, laptop: 4 / 3 }, min: 1000, sizes: "(max-width: 760px) 100vw, 42vw" },
