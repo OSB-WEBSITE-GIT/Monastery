@@ -107,6 +107,8 @@ To download a backup: **Actions → Weekly backup →** pick a run **→ Artifac
 ## Updating the database later
 If you receive a newer `schema.sql`, you can run it again in the SQL Editor at any time: it keeps all content and users and only adds the new rules. **Do not** run `seed.sql` again, because it replaces all content.
 
+
+**Portal update (October 2026):** after running the new `schema.sql`, run `supabase/update-portal.sql` once. It adds the opening scene, puts *Shepherds of the community* first (the Archbishop large, in the centre), then the community in India and then the institutions, hides the former Mariamala opening photo (it can be shown again), changes the line under the site name and adds **Leadership** to the menu. It keeps all text, photos and users.
 ## Everyday use
 - **Sign in:** use the **Sign in** link at the very bottom of the page, or add `#admin` to the end of the address.
 - **Edit page:** shows a **✎ Edit this section** button on every section, which opens that section in the dashboard. Photos are changed on the page itself with **Photo…** and **Adjust**. Text is not typed on the page.
@@ -114,7 +116,12 @@ If you receive a newer `schema.sql`, you can run it again in the SQL Editor at a
 - **Language:** the **En / Ma** switch at the top right changes the language visitors see. In the dashboard, English and Malayalam are edited side by side.
 - **Dashboard:** forms for everything, each with **Save** and **Cancel**; closing (the red **✕**, Esc, or another tab) asks first if something is not saved; with English and Malayalam side by side: page sections, menu, daily timetable, feasts and events, news, gallery albums, site settings and users.
 - **Photos:** each place a photo appears has a fixed frame shape that adapts to phone, tablet and laptop, so the page layout never changes whatever photo is uploaded. After uploading, the **Adjust photo** window opens: drag the photo and use the zoom slider to choose what shows in the frame, checking the phone, tablet and laptop previews. The original photo is never cut, so you can re-adjust at any time with **Adjust**. Gallery photos always open in full. Photos are resized automatically for fast loading. If a photo is too small, or zoomed in too far, the editor warns you and says what size is needed.
-- **Welcome verses:** on a visitor's first visit each day, a short welcome screen shows the emblem and one verse picked at random, then fades into the page (a click or key press skips it). Signed-in editors never see it. The verses are in **Dashboard → Welcome verses**: add, change, hide or remove them, and add the Malayalam text when it is available.
+- **Opening scene:** every time the website opens, the silver statue of St. John Gualbert before the crucifix appears with one verse (picked at random) and an open Bible below it; the statue slowly turns from silver to gold as soft rays of light appear, the verse turns gold on a grey panel, and the menu appears. The page moves on only when the visitor scrolls. **Home ›** (after 4 seconds) skips to the end. Signed-in editors see the end straight away.
+  - The verses are in **Dashboard → Welcome verses** (also **✎ Edit verses** on the scene in edit mode): add, change, hide or remove them, and add Malayalam when it is available.
+  - Settings at the top of `assets/css/intro.css`: `--intro-slow` (speed: 1 = quick, 1.6 = 60% slower, 2 = twice as slow), `--intro-rays` (strength of the light rays) and `--intro-panel` (colour of the panel behind the golden verse). The scene's files are only `intro.js`, `intro.css` and `assets/img/intro/`, so changing it never touches the rest of the site.
+  - To hide the scene, open its section (**Opening scene**) in **Dashboard → Page sections** and untick **Visible to visitors**.
+  - The two statue pictures are in `assets/img/intro/`; `tools/make_intro.py` makes them from the originals in `tools/source-intro/`.
+- **People sections (cards):** in a section's **Layout**, tick **Show the first item large, in the centre** to feature one person, as for the Archbishop under *Shepherds of the community*.
 - **Feasts:** tick **Repeats every year on this date** so a feast appears every year without being entered again.
 - **Videos:** paste a YouTube link into a gallery album.
 
