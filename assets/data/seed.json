@@ -8,8 +8,8 @@
      "ml": "വല്ലോംബ്രോസൻ ബെനഡിക്ടൈൻസ്"
     },
     "subtitle": {
-     "en": "O.S.B. · St. Mary’s Sui Juris Priory · Mariamala",
-     "ml": "ഒ.എസ്.ബി. · സെന്റ് മേരീസ് പ്രയറി · മരിയമല"
+     "en": "O.S.B. · Vallombrosan Benedictine Congregation · India",
+     "ml": ""
     },
     "strip": {
      "en": "Archeparchy of Kottayam · Syro-Malabar Church",
@@ -135,6 +135,17 @@
  ],
  "menu_items": [
   {
+   "id": "59f6f216-f17c-56af-8311-3fdf040603bc",
+   "parent_id": null,
+   "label": {
+    "en": "Leadership",
+    "ml": "നേതൃത്വം"
+   },
+   "target": "#leadership",
+   "sort": 10,
+   "visible": true
+  },
+  {
    "id": "72ba65b4-6031-5878-bbe2-410323117ea8",
    "parent_id": null,
    "label": {
@@ -142,7 +153,7 @@
     "ml": "ചരിത്രം"
    },
    "target": "#heritage",
-   "sort": 10,
+   "sort": 20,
    "visible": true
   },
   {
@@ -153,7 +164,7 @@
     "ml": "മരിയമല"
    },
    "target": "#mariamala",
-   "sort": 20,
+   "sort": 30,
    "visible": true
   },
   {
@@ -164,7 +175,7 @@
     "ml": "ഭവനങ്ങൾ"
    },
    "target": "#houses",
-   "sort": 30,
+   "sort": 40,
    "visible": true
   },
   {
@@ -175,7 +186,7 @@
     "ml": "സമൂഹം"
    },
    "target": "#community",
-   "sort": 40,
+   "sort": 50,
    "visible": true
   },
   {
@@ -186,7 +197,7 @@
     "ml": "ആധ്യാത്മികത"
    },
    "target": "#spirituality",
-   "sort": 50,
+   "sort": 60,
    "visible": true
   },
   {
@@ -197,7 +208,7 @@
     "ml": "ശുശ്രൂഷകൾ"
    },
    "target": "#ministries",
-   "sort": 60,
+   "sort": 70,
    "visible": true
   },
   {
@@ -208,7 +219,7 @@
     "ml": "കലണ്ടർ"
    },
    "target": "#calendar",
-   "sort": 70,
+   "sort": 80,
    "visible": true
   },
   {
@@ -219,7 +230,7 @@
     "ml": "വാർത്തകൾ"
    },
    "target": "#news",
-   "sort": 80,
+   "sort": 90,
    "visible": true
   },
   {
@@ -230,7 +241,7 @@
     "ml": "ഗാലറി"
    },
    "target": "#gallery",
-   "sort": 90,
+   "sort": 100,
    "visible": true
   },
   {
@@ -241,54 +252,22 @@
     "ml": "ബന്ധപ്പെടുക"
    },
    "target": "#contact",
-   "sort": 100,
+   "sort": 110,
    "visible": true
   }
  ],
  "sections": [
   {
-   "id": "4cffd96b-7abf-5855-81d1-f46d6dcf22d8",
-   "slug": "home",
-   "kind": "hero",
-   "eyebrow": {
-    "en": "St. Mary’s Sui Juris Priory · Mariamala",
-    "ml": "സെന്റ് മേരീസ് പ്രയറി · മരിയമല"
-   },
-   "title": {
-    "en": "Ora et labora: a life of prayer and work",
-    "ml": "Ora et labora: പ്രാർത്ഥനയുടെയും അധ്വാനത്തിന്റെയും ജീവിതം"
-   },
-   "body": {
-    "en": "<p>The Vallombrosan Benedictine Congregation belongs to the worldwide Benedictine Confederation and follows the Rule of St. Benedict. In India its monks live in the Oriental tradition of the Syro-Malabar Church.</p>",
-    "ml": ""
-   },
-   "image_url": "assets/img/client/mariamala-front.1379.jpg#w=800,1200,1379&f=50,62,1",
-   "image_caption": {
-    "en": "St. Mary’s Monastery, Mariamala, Kaduthuruthy",
-    "ml": "സെന്റ് മേരീസ് ആശ്രമം, മരിയമല, കടുത്തുരുത്തി"
-   },
-   "cta_label": {
-    "en": "Visit the monastery",
-    "ml": "ആശ്രമം സന്ദർശിക്കുക"
-   },
-   "cta_link": "#contact",
-   "settings": {
-    "show_now": true
-   },
-   "sort": 10,
-   "visible": true
-  },
-  {
-   "id": "4d2983ab-2393-5fa5-9994-5a54a7cd2ff0",
-   "slug": "highlights",
-   "kind": "tiles",
+   "id": "826d3f23-16c7-5082-87f0-d7d5b0ad9c6e",
+   "slug": "opening",
+   "kind": "intro",
    "eyebrow": {
     "en": "",
     "ml": ""
    },
    "title": {
-    "en": "",
-    "ml": ""
+    "en": "Welcome",
+    "ml": "സ്വാഗതം"
    },
    "body": {
     "en": "",
@@ -305,29 +284,29 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 20,
+   "sort": 10,
    "visible": true
   },
   {
-   "id": "cd69d3c2-ae49-5692-a280-53eb931aa643",
-   "slug": "heritage",
-   "kind": "story",
+   "id": "cf7e298c-c92e-5bda-bbbd-343d07df7d00",
+   "slug": "leadership",
+   "kind": "cards",
    "eyebrow": {
-    "en": "Origin",
-    "ml": "ഉത്ഭവം"
+    "en": "Leadership",
+    "ml": "നേതൃത്വം"
    },
    "title": {
-    "en": "St. John Gualbert and Vallombrosa",
-    "ml": "വിശുദ്ധ ജോൺ ഗ്വാൽബെർട്ടും വല്ലോംബ്രോസയും"
+    "en": "Shepherds of the community",
+    "ml": "സമൂഹത്തിന്റെ ഇടയന്മാർ"
    },
    "body": {
-    "en": "<p>The Vallombrosan Benedictine Congregation is a member of the worldwide Benedictine Confederation and follows the Rule of St. Benedict, the father of Western monasticism. Its guiding motto is <i>Ora et labora</i>, prayer and work.</p><p>The congregation was founded by St. John Gualbert in 1036 at Vallombrosa, near Florence. After his brother was murdered, John set out to take revenge. On Good Friday he came upon the murderer and was about to kill him, but the man begged for mercy in the name of Christ crucified. John forgave him, and that forgiveness awoke in him a deep love for the crucified Christ. He went to pray in the church of San Miniato in Florence, where, the tradition says, the crucifix bowed its head to him.</p><blockquote>From an act of forgiveness came a life given entirely to God.</blockquote><p>After years of prayer and reflection he founded the Vallombrosan congregation, giving first place to community life rooted in charity. By the time of his death there were nearly twelve monasteries across Italy.</p><p>By the founder’s will, the congregation exists for the <i>vinculum caritatis et consuetudinis</i>, the bond of charity and common life between its communities, which under the authority of the Abbot General help one another to safeguard and foster the consecrated life of their monks.</p>",
+    "en": "",
     "ml": ""
    },
-   "image_url": "assets/img/vallombrosa-nave.334.jpg#w=334",
+   "image_url": null,
    "image_caption": {
-    "en": "The abbey church at Vallombrosa, near Florence",
-    "ml": "ഫ്ലോറൻസിനടുത്തുള്ള വല്ലോംബ്രോസ ആബി ദേവാലയം"
+    "en": "",
+    "ml": ""
    },
    "cta_label": {
     "en": "",
@@ -335,10 +314,10 @@
    },
    "cta_link": null,
    "settings": {
-    "layout": "image",
-    "photo_position": "beside"
+    "photo": "portrait",
+    "feature_first": true
    },
-   "sort": 30,
+   "sort": 20,
    "visible": true
   },
   {
@@ -370,6 +349,36 @@
    "settings": {
     "layout": "image"
    },
+   "sort": 30,
+   "visible": true
+  },
+  {
+   "id": "4d2983ab-2393-5fa5-9994-5a54a7cd2ff0",
+   "slug": "highlights",
+   "kind": "tiles",
+   "eyebrow": {
+    "en": "",
+    "ml": ""
+   },
+   "title": {
+    "en": "",
+    "ml": ""
+   },
+   "body": {
+    "en": "",
+    "ml": ""
+   },
+   "image_url": null,
+   "image_caption": {
+    "en": "",
+    "ml": ""
+   },
+   "cta_label": {
+    "en": "",
+    "ml": ""
+   },
+   "cta_link": null,
+   "settings": {},
    "sort": 40,
    "visible": true
   },
@@ -404,6 +413,39 @@
    "visible": true
   },
   {
+   "id": "cd69d3c2-ae49-5692-a280-53eb931aa643",
+   "slug": "heritage",
+   "kind": "story",
+   "eyebrow": {
+    "en": "Origin",
+    "ml": "ഉത്ഭവം"
+   },
+   "title": {
+    "en": "St. John Gualbert and Vallombrosa",
+    "ml": "വിശുദ്ധ ജോൺ ഗ്വാൽബെർട്ടും വല്ലോംബ്രോസയും"
+   },
+   "body": {
+    "en": "<p>The Vallombrosan Benedictine Congregation is a member of the worldwide Benedictine Confederation and follows the Rule of St. Benedict, the father of Western monasticism. Its guiding motto is <i>Ora et labora</i>, prayer and work.</p><p>The congregation was founded by St. John Gualbert in 1036 at Vallombrosa, near Florence. After his brother was murdered, John set out to take revenge. On Good Friday he came upon the murderer and was about to kill him, but the man begged for mercy in the name of Christ crucified. John forgave him, and that forgiveness awoke in him a deep love for the crucified Christ. He went to pray in the church of San Miniato in Florence, where, the tradition says, the crucifix bowed its head to him.</p><blockquote>From an act of forgiveness came a life given entirely to God.</blockquote><p>After years of prayer and reflection he founded the Vallombrosan congregation, giving first place to community life rooted in charity. By the time of his death there were nearly twelve monasteries across Italy.</p><p>By the founder’s will, the congregation exists for the <i>vinculum caritatis et consuetudinis</i>, the bond of charity and common life between its communities, which under the authority of the Abbot General help one another to safeguard and foster the consecrated life of their monks.</p>",
+    "ml": ""
+   },
+   "image_url": "assets/img/vallombrosa-nave.334.jpg#w=334",
+   "image_caption": {
+    "en": "The abbey church at Vallombrosa, near Florence",
+    "ml": "ഫ്ലോറൻസിനടുത്തുള്ള വല്ലോംബ്രോസ ആബി ദേവാലയം"
+   },
+   "cta_label": {
+    "en": "",
+    "ml": ""
+   },
+   "cta_link": null,
+   "settings": {
+    "layout": "image",
+    "photo_position": "beside"
+   },
+   "sort": 60,
+   "visible": true
+  },
+  {
    "id": "7495e89e-aea7-5058-b434-93a1406b0100",
    "slug": "mariamala",
    "kind": "story",
@@ -432,40 +474,40 @@
    "settings": {
     "layout": "image"
    },
-   "sort": 60,
+   "sort": 70,
    "visible": true
   },
   {
-   "id": "cf7e298c-c92e-5bda-bbbd-343d07df7d00",
-   "slug": "leadership",
-   "kind": "cards",
+   "id": "4cffd96b-7abf-5855-81d1-f46d6dcf22d8",
+   "slug": "home",
+   "kind": "hero",
    "eyebrow": {
-    "en": "Leadership",
-    "ml": "നേതൃത്വം"
+    "en": "St. Mary’s Sui Juris Priory · Mariamala",
+    "ml": "സെന്റ് മേരീസ് പ്രയറി · മരിയമല"
    },
    "title": {
-    "en": "Shepherds of the community",
-    "ml": "സമൂഹത്തിന്റെ ഇടയന്മാർ"
+    "en": "Ora et labora: a life of prayer and work",
+    "ml": "Ora et labora: പ്രാർത്ഥനയുടെയും അധ്വാനത്തിന്റെയും ജീവിതം"
    },
    "body": {
-    "en": "",
+    "en": "<p>The Vallombrosan Benedictine Congregation belongs to the worldwide Benedictine Confederation and follows the Rule of St. Benedict. In India its monks live in the Oriental tradition of the Syro-Malabar Church.</p>",
     "ml": ""
    },
-   "image_url": null,
+   "image_url": "assets/img/client/mariamala-front.1379.jpg#w=800,1200,1379&f=50,62,1",
    "image_caption": {
-    "en": "",
-    "ml": ""
+    "en": "St. Mary’s Monastery, Mariamala, Kaduthuruthy",
+    "ml": "സെന്റ് മേരീസ് ആശ്രമം, മരിയമല, കടുത്തുരുത്തി"
    },
    "cta_label": {
-    "en": "",
-    "ml": ""
+    "en": "Visit the monastery",
+    "ml": "ആശ്രമം സന്ദർശിക്കുക"
    },
-   "cta_link": null,
+   "cta_link": "#contact",
    "settings": {
-    "photo": "portrait"
+    "show_now": true
    },
-   "sort": 70,
-   "visible": true
+   "sort": 80,
+   "visible": false
   },
   {
    "id": "606f0ad1-1af2-592e-80e5-17da52a62b10",
@@ -494,7 +536,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 80,
+   "sort": 90,
    "visible": true
   },
   {
@@ -524,7 +566,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 90,
+   "sort": 100,
    "visible": true
   },
   {
@@ -554,7 +596,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 100,
+   "sort": 110,
    "visible": true
   },
   {
@@ -586,7 +628,7 @@
    "settings": {
     "layout": "image"
    },
-   "sort": 110,
+   "sort": 120,
    "visible": true
   },
   {
@@ -616,7 +658,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 120,
+   "sort": 130,
    "visible": true
   },
   {
@@ -646,7 +688,7 @@
    },
    "cta_link": "#contact",
    "settings": {},
-   "sort": 130,
+   "sort": 140,
    "visible": true
   },
   {
@@ -676,7 +718,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 140,
+   "sort": 150,
    "visible": true
   },
   {
@@ -708,7 +750,7 @@
    "settings": {
     "layout": "image"
    },
-   "sort": 150,
+   "sort": 160,
    "visible": true
   },
   {
@@ -740,7 +782,7 @@
    "settings": {
     "limit": 6
    },
-   "sort": 160,
+   "sort": 170,
    "visible": true
   },
   {
@@ -772,7 +814,7 @@
    "settings": {
     "limit": 3
    },
-   "sort": 170,
+   "sort": 180,
    "visible": true
   },
   {
@@ -802,7 +844,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 180,
+   "sort": 190,
    "visible": true
   },
   {
@@ -832,11 +874,74 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 190,
+   "sort": 200,
    "visible": true
   }
  ],
  "section_items": [
+  {
+   "id": "d0e65b87-e57a-5a17-9fe7-235f9586393e",
+   "section_id": "cf7e298c-c92e-5bda-bbbd-343d07df7d00",
+   "label": {
+    "en": "Metropolitan Archbishop of Kottayam",
+    "ml": ""
+   },
+   "title": {
+    "en": "Mar Mathew Moolakkattu OSB",
+    "ml": ""
+   },
+   "body": {
+    "en": "<p>A monk of the Vallombrosan Congregation</p>",
+    "ml": ""
+   },
+   "image_url": "assets/img/client/archbishop.366.jpg#w=366",
+   "link": null,
+   "extra": {},
+   "sort": 10,
+   "visible": true
+  },
+  {
+   "id": "2469e165-df9c-5e7f-9830-c0dc084ef0aa",
+   "section_id": "cf7e298c-c92e-5bda-bbbd-343d07df7d00",
+   "label": {
+    "en": "Abbot General",
+    "ml": ""
+   },
+   "title": {
+    "en": "Fr. Giuseppe Casetta",
+    "ml": ""
+   },
+   "body": {
+    "en": "<p>Vallombrosan Benedictine Congregation</p>",
+    "ml": ""
+   },
+   "image_url": "assets/img/client/abbot-general.319.jpg#w=319",
+   "link": null,
+   "extra": {},
+   "sort": 20,
+   "visible": true
+  },
+  {
+   "id": "2c9e34fc-094d-5f1e-8748-1c4999032c7b",
+   "section_id": "cf7e298c-c92e-5bda-bbbd-343d07df7d00",
+   "label": {
+    "en": "Sui Juris Prior",
+    "ml": ""
+   },
+   "title": {
+    "en": "Fr. Bino Cheriyil OSB",
+    "ml": ""
+   },
+   "body": {
+    "en": "<p>St. Mary’s Priory, Mariamala</p>",
+    "ml": ""
+   },
+   "image_url": "assets/img/client/prior.314.jpg#w=314",
+   "link": null,
+   "extra": {},
+   "sort": 30,
+   "visible": true
+  },
   {
    "id": "461be656-5973-50bd-b787-55b2cd3eae76",
    "section_id": "4d2983ab-2393-5fa5-9994-5a54a7cd2ff0",
@@ -940,6 +1045,90 @@
    "link": "#ministries",
    "extra": {},
    "sort": 50,
+   "visible": true
+  },
+  {
+   "id": "c1b4e56b-29fa-544c-9eb1-e935eb64689b",
+   "section_id": "cb123cf5-b1df-5ff4-8f75-0f934d2f0564",
+   "label": {
+    "en": "40",
+    "ml": ""
+   },
+   "title": {
+    "en": "solemnly professed monks serving the congregation",
+    "ml": ""
+   },
+   "body": {
+    "en": "",
+    "ml": ""
+   },
+   "image_url": null,
+   "link": null,
+   "extra": {},
+   "sort": 10,
+   "visible": true
+  },
+  {
+   "id": "e026ef6a-abb1-5770-9b8e-2827f52a3887",
+   "section_id": "cb123cf5-b1df-5ff4-8f75-0f934d2f0564",
+   "label": {
+    "en": "5",
+    "ml": ""
+   },
+   "title": {
+    "en": "monasteries and houses in India",
+    "ml": ""
+   },
+   "body": {
+    "en": "",
+    "ml": ""
+   },
+   "image_url": null,
+   "link": null,
+   "extra": {},
+   "sort": 20,
+   "visible": true
+  },
+  {
+   "id": "68423438-58bd-5a21-87c3-66aa40478348",
+   "section_id": "cb123cf5-b1df-5ff4-8f75-0f934d2f0564",
+   "label": {
+    "en": "1988",
+    "ml": ""
+   },
+   "title": {
+    "en": "year the community came to India",
+    "ml": ""
+   },
+   "body": {
+    "en": "",
+    "ml": ""
+   },
+   "image_url": null,
+   "link": null,
+   "extra": {},
+   "sort": 30,
+   "visible": true
+  },
+  {
+   "id": "24c8ed8b-e88f-5220-9364-c2f2acdf8a35",
+   "section_id": "cb123cf5-b1df-5ff4-8f75-0f934d2f0564",
+   "label": {
+    "en": "2,000+",
+    "ml": ""
+   },
+   "title": {
+    "en": "students at St. Kuriakose Public School, Kaduthuruthy",
+    "ml": ""
+   },
+   "body": {
+    "en": "",
+    "ml": ""
+   },
+   "image_url": null,
+   "link": null,
+   "extra": {},
+   "sort": 40,
    "visible": true
   },
   {
@@ -1066,153 +1255,6 @@
    "link": null,
    "extra": {},
    "sort": 60,
-   "visible": true
-  },
-  {
-   "id": "c1b4e56b-29fa-544c-9eb1-e935eb64689b",
-   "section_id": "cb123cf5-b1df-5ff4-8f75-0f934d2f0564",
-   "label": {
-    "en": "40",
-    "ml": ""
-   },
-   "title": {
-    "en": "solemnly professed monks serving the congregation",
-    "ml": ""
-   },
-   "body": {
-    "en": "",
-    "ml": ""
-   },
-   "image_url": null,
-   "link": null,
-   "extra": {},
-   "sort": 10,
-   "visible": true
-  },
-  {
-   "id": "e026ef6a-abb1-5770-9b8e-2827f52a3887",
-   "section_id": "cb123cf5-b1df-5ff4-8f75-0f934d2f0564",
-   "label": {
-    "en": "5",
-    "ml": ""
-   },
-   "title": {
-    "en": "monasteries and houses in India",
-    "ml": ""
-   },
-   "body": {
-    "en": "",
-    "ml": ""
-   },
-   "image_url": null,
-   "link": null,
-   "extra": {},
-   "sort": 20,
-   "visible": true
-  },
-  {
-   "id": "68423438-58bd-5a21-87c3-66aa40478348",
-   "section_id": "cb123cf5-b1df-5ff4-8f75-0f934d2f0564",
-   "label": {
-    "en": "1988",
-    "ml": ""
-   },
-   "title": {
-    "en": "year the community came to India",
-    "ml": ""
-   },
-   "body": {
-    "en": "",
-    "ml": ""
-   },
-   "image_url": null,
-   "link": null,
-   "extra": {},
-   "sort": 30,
-   "visible": true
-  },
-  {
-   "id": "24c8ed8b-e88f-5220-9364-c2f2acdf8a35",
-   "section_id": "cb123cf5-b1df-5ff4-8f75-0f934d2f0564",
-   "label": {
-    "en": "2,000+",
-    "ml": ""
-   },
-   "title": {
-    "en": "students at St. Kuriakose Public School, Kaduthuruthy",
-    "ml": ""
-   },
-   "body": {
-    "en": "",
-    "ml": ""
-   },
-   "image_url": null,
-   "link": null,
-   "extra": {},
-   "sort": 40,
-   "visible": true
-  },
-  {
-   "id": "d0e65b87-e57a-5a17-9fe7-235f9586393e",
-   "section_id": "cf7e298c-c92e-5bda-bbbd-343d07df7d00",
-   "label": {
-    "en": "Abbot General",
-    "ml": ""
-   },
-   "title": {
-    "en": "Fr. Giuseppe Casetta",
-    "ml": ""
-   },
-   "body": {
-    "en": "<p>Vallombrosan Benedictine Congregation</p>",
-    "ml": ""
-   },
-   "image_url": "assets/img/client/abbot-general.319.jpg#w=319",
-   "link": null,
-   "extra": {},
-   "sort": 10,
-   "visible": true
-  },
-  {
-   "id": "2469e165-df9c-5e7f-9830-c0dc084ef0aa",
-   "section_id": "cf7e298c-c92e-5bda-bbbd-343d07df7d00",
-   "label": {
-    "en": "Sui Juris Prior",
-    "ml": ""
-   },
-   "title": {
-    "en": "Fr. Bino Cheriyil OSB",
-    "ml": ""
-   },
-   "body": {
-    "en": "<p>St. Mary’s Priory, Mariamala</p>",
-    "ml": ""
-   },
-   "image_url": "assets/img/client/prior.314.jpg#w=314",
-   "link": null,
-   "extra": {},
-   "sort": 20,
-   "visible": true
-  },
-  {
-   "id": "2c9e34fc-094d-5f1e-8748-1c4999032c7b",
-   "section_id": "cf7e298c-c92e-5bda-bbbd-343d07df7d00",
-   "label": {
-    "en": "Metropolitan Archbishop of Kottayam",
-    "ml": ""
-   },
-   "title": {
-    "en": "Mar Mathew Moolakkattu OSB",
-    "ml": ""
-   },
-   "body": {
-    "en": "<p>A monk of the Vallombrosan Congregation</p>",
-    "ml": ""
-   },
-   "image_url": "assets/img/client/archbishop.366.jpg#w=366",
-   "link": null,
-   "extra": {},
-   "sort": 30,
    "visible": true
   },
   {
