@@ -59,14 +59,20 @@
     const sec = ((db && db.sections) || []).find((s) => s.kind === "intro" && s.visible !== false);
     if (!sec) { root.innerHTML = ""; return; }
     state = { mounted: true, finished: false, rising: false };
+    // Pictures: the two chosen in the dashboard (Opening scene → Starting / Final picture), or the built-in statue.
+    const st = sec.settings || {};
+    state.pics = (st.start_url || "") + "|" + (st.final_url || "");
+    const pic = (url, name) => (url && OSB.Photo ? OSB.Photo.imgAttrs(url, SIZES) : `srcset="${srcset(name)}" sizes="${SIZES}"`);
+    // a picture without transparency (JPEG) is blended so its white background disappears into the white page
+    const blend = (url) => (url && !/\.png$|^data:image\/png/i.test(OSB.Photo ? OSB.Photo.fileOf(url) : url) ? " ix-blend" : "");
     verse = pickVerse(db, lang);
     const SLOW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--intro-slow")) || 1.6;   // set in intro.css
     const T = { minStart: 1300 * SLOW, rise: 4200 * SLOW, homeAt: 4000, waitGold: 6000 };
 
     root.innerHTML = `<section id="intro" aria-label="${esc(plain(tr(sec.title, lang)) || "Welcome")}" data-section="${esc(sec.id)}" data-kind="intro"><div class="ix-aura" aria-hidden="true"></div><div class="ix-stage">
         <figure class="ix-statue" aria-hidden="true">
-          <img class="ix-start" alt="" fetchpriority="high" decoding="async" srcset="${srcset("start")}" sizes="${SIZES}">
-          <img class="ix-gold" alt="" decoding="async" srcset="${srcset("gold")}" sizes="${SIZES}">
+          <img class="ix-start${blend(st.start_url)}" alt="" fetchpriority="high" decoding="async" ${pic(st.start_url, "start")}>
+          <img class="ix-gold${blend(st.final_url)}" alt="" decoding="async" ${pic(st.final_url, "gold")}>
           <div class="ix-glow"></div></figure>
         <h1 class="ix-title"></h1>
         <div class="ix-plaque"><p class="ix-verse"></p><div class="ix-foot">${BIBLE}<div class="ix-ref"></div></div></div>
@@ -146,6 +152,10 @@
   function sync({ db, lang, user, setting }) {
     if (!root || !state.mounted || !document.getElementById("intro")) return;
     fillVerse(lang); fillTitle(lang, setting); measureHead();
+    // pictures changed in the dashboard: show the new ones (an editor sees the finished scene)
+    const sec = ((db && db.sections) || []).find((s) => s.kind === "intro");
+    const st = (sec && sec.settings) || {};
+    if (state.pics !== (st.start_url || "") + "|" + (st.final_url || "")) { root.innerHTML = ""; state.mounted = false; mount({ db, lang, user, setting }); return; }
     if (el.home) el.home.textContent = lang === "ml" ? "ഹോം ›" : "Home ›";
     if (user && user.role && state.finishNow) state.finishNow();
   }

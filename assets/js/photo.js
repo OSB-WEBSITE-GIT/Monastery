@@ -26,11 +26,13 @@
     cover:    { label: "Album cover", ratio: { phone: 4 / 3, tablet: 4 / 3, laptop: 4 / 3 }, min: 800, sizes: "(max-width: 600px) 100vw, 380px" },
     news:     { label: "News photo", ratio: { phone: 16 / 10, tablet: 16 / 10, laptop: 16 / 10 }, min: 1000, sizes: "(max-width: 820px) 100vw, 56vw" },
     full:     { label: "Gallery photo (always shown whole)", ratio: null, min: 1200, sizes: "100vw" },
+    intro:    { label: "Opening scene picture (shown whole)", ratio: null, min: 900, sizes: "(max-width: 680px) 300px, 400px" },
   };
 
   /* Which slot a stored photo field is shown in. */
   function slotFor(table, row, field, db) {
     row = row || {};
+    if (table === "sections" && row.kind === "intro") return "intro";
     if (table === "sections") return row.kind === "hero" ? "hero" : (row.settings || {}).photo_position === "beside" ? "sectionSide" : "section";
     if (table === "section_items") {
       const sec = ((db && db.sections) || []).find((s) => s.id === row.section_id) || {};

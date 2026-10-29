@@ -448,6 +448,19 @@
     if (patch.kind === "image" && "youtube_id" in patch) patch.youtube_id = patch.youtube_id || null;
     return patch;
   }
+  /* Opening scene: warn when the two pictures differ in shape, since they must line up to look like one statue changing. */
+  function introPairCheck(form) {
+    const note = document.createElement("p"); note.className = "cms-lowres"; note.hidden = true; form.querySelector("[data-key='settings.final_url']").after(note);
+    const raw = (k) => { const i = form.querySelector(`[data-key='${k}'] input`); return i ? i.dataset.raw || "" : ""; };
+    const check = async () => {
+      const a = raw("settings.start_url"), b = raw("settings.final_url"); note.hidden = true;
+      if (!a && !b) return;
+      if (!a || !b) { note.textContent = "Add both pictures, or leave both empty to use the built-in statue. With only one, the built-in statue is used for the other, and they will not line up."; note.hidden = false; return; }
+      const [da, db] = await Promise.all([measure(OSB.Photo.fileOf(a)), measure(OSB.Photo.fileOf(b))]);
+      if (da && db && Math.abs(da.w / da.h - db.w / db.h) > 0.02) { note.textContent = `The two pictures have different shapes (${da.w} × ${da.h} and ${db.w} × ${db.h}). They should be the same size, with the statue in the same place, so the change looks like one statue turning gold.`; note.hidden = false; }
+    };
+    form.addEventListener("input", () => setTimeout(check, 50)); check();
+  }
   function wireFormControls(form) {
     $$("[data-type=image]", form).forEach((f) => {
       const inp = f.querySelector("input"); const thumb = f.querySelector(".cms-thumb");
@@ -486,6 +499,11 @@
       const keep = { tiles: ["label", "title", "body", "link"], story: sec.settings && sec.settings.layout === "list" ? ["title", "body"] : ["label", "title"], stats: ["label", "title"], steps: ["title", "body"], cards: ["label", "title", "body", "image_url", "link"], contact: ["title", "body", "extra.phone", "extra.email"] }[sec.kind];
       if (keep) fields = fields.filter(([k]) => keep.includes(k) || k === "visible");
     }
+    if (table === "sections" && r.kind === "intro") fields = [
+      ["title", "i18n", "Name (read by screen readers)"],
+      ["settings.start_url", "image", "Starting picture (silver)", { help: "Leave empty to use the built-in statue. Use a PNG with a transparent background, or a picture on a plain white background. Both pictures should be the same size, with the statue in the same place." }],
+      ["settings.final_url", "image", "Final picture (gold)", { help: "Shown at the end of the animation. Same size and position as the starting picture." }],
+      ["visible", "bool", "Visible to visitors"]];
     const back = ctx.parentTable ? `${TABS.find((t) => t[0] === ctx.parentTable)[1]} › ${rowTitle(ctx.parentTable, rowOf(ctx.parentTable, ctx.parentId))}` : (TABS.find((t) => t[0] === table) || [, ""])[1];
     p.innerHTML = `<header class="cms-panel-head"><div><button type="button" class="cms-btn link" data-back>← ${esc(back)}</button><h2>${isNew ? "Add" : esc(rowTitle(table, r))}</h2>${isNew ? "" : `<button type="button" class="cms-btn" data-history>History</button>`}
       ${r.updated_at ? `<p>Last changed ${esc(new Date(r.updated_at).toLocaleString("en-IN"))}</p>` : ""}</div></header>
@@ -494,6 +512,7 @@
       <div class="cms-actions sticky"><button class="cms-btn primary" type="submit">Save</button><button type="button" class="cms-btn" data-back>Cancel</button>
       ${!isNew ? `<button type="button" class="cms-btn danger" data-delete>Delete</button>` : ""}</div></form><div id="cms-children"></div>`;
     const form = $("#cms-f", p); wireFormControls(form);
+    if (table === "sections" && r.kind === "intro") introPairCheck(form);
     const hb = $("[data-history]", p); if (hb) hb.onclick = () => OSB.HistoryUI.openRow(table, id, { onRestored: async () => { await OSB.reload(); refreshDash(); } });
     const goBack = () => { if (ctx.parentTable) D = { tab: ctx.parentTable, id: ctx.parentId }; else D = { tab: D.tab }; refreshDash(); };
     $$("[data-back]", p).forEach((b) => (b.onclick = goBack));
