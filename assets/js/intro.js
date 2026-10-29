@@ -41,15 +41,18 @@
     el.verse.textContent = "“" + tr(verse.text, lang) + "”"; el.verse.lang = ml ? "ml" : "en";
     el.ref.textContent = tr(verse.reference, lang);
   }
-  function fillBar(db, lang, setting) {
-    if (!el.bar) return;
+  function fillTitle(lang, setting) {   // page heading for screen readers and search engines
     const site = setting("site") || {};
-    if (el.title) el.title.textContent = [plain(tr(site.name, lang)), plain(tr(site.subtitle, lang))].filter(Boolean).join(" · ");   // page heading for screen readers and search engines
-    const menu = ((db && db.menu_items) || []).filter((m) => !m.parent_id && m.visible !== false).sort((a, b) => a.sort - b.sort);
-    el.bar.innerHTML = `<a class="ix-brand" href="#top">${site.emblem_url ? `<img src="${esc(site.emblem_url)}" alt="">` : ""}<span>${esc(plain(tr(site.name, lang)))}</span></a>
-      <nav aria-label="Main">${menu.map((m) => `<a href="${esc(OSB.safeUrl ? OSB.safeUrl(m.target) : m.target)}">${esc(tr(m.label, lang))}</a>`).join("")}</nav>
-      <div class="ix-lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-label="English" aria-pressed="${lang === "en"}">En</button><span aria-hidden="true">/</span><button type="button" data-lang="ml" aria-label="മലയാളം" aria-pressed="${lang === "ml"}">Ma</button></div>`;
+    if (el.title) el.title.textContent = [plain(tr(site.name, lang)), plain(tr(site.subtitle, lang))].filter(Boolean).join(" · ");
   }
+  /* The site's own header and menu sit above the scene. During the animation they are hidden, and they fade in at the end. */
+  const HEAD = () => [document.getElementById("masthead"), document.getElementById("nav")].filter(Boolean);
+  function measureHead() {
+    const nav = document.getElementById("nav"), intro = document.getElementById("intro");
+    const h = intro ? Math.round(intro.getBoundingClientRect().top + scrollY) : nav ? Math.round(nav.getBoundingClientRect().bottom + scrollY) : 150;   // everything above the scene
+    document.documentElement.style.setProperty("--ix-head", h + "px");
+  }
+  const showHead = (on) => document.body.classList.toggle("ix-wait", !on);
 
   function mount({ db, lang, user, setting }) {
     root = document.getElementById("intro-root"); if (!root) return;
@@ -66,13 +69,15 @@
           <img class="ix-gold" alt="" decoding="async" srcset="${srcset("gold")}" sizes="${SIZES}">
           <div class="ix-glow"></div></figure>
         <h1 class="ix-title"></h1>
-        <div class="ix-plaque"><p class="ix-verse"></p><div class="ix-ref"></div>${BIBLE}</div>
+        <div class="ix-plaque"><p class="ix-verse"></p><div class="ix-foot">${BIBLE}<div class="ix-ref"></div></div></div>
       </div></section>
-      <header class="ix-bar"></header>
       <button type="button" class="ix-home">${lang === "ml" ? "ഹോം ›" : "Home ›"}</button>`;
     const $ = (s) => root.querySelector(s);
-    el = { title: $(".ix-title"), intro: $("#intro"), stage: $(".ix-stage"), statue: $(".ix-statue"), start: $(".ix-start"), gold: $(".ix-gold"), verse: $(".ix-verse"), ref: $(".ix-ref"), bar: $(".ix-bar"), home: $(".ix-home") };
-    fillVerse(lang); fillBar(db, lang, setting);
+    el = { title: $(".ix-title"), intro: $("#intro"), stage: $(".ix-stage"), statue: $(".ix-statue"), start: $(".ix-start"), gold: $(".ix-gold"), verse: $(".ix-verse"), ref: $(".ix-ref"), home: $(".ix-home") };
+    fillVerse(lang); fillTitle(lang, setting);
+    measureHead(); addEventListener("resize", measureHead);
+    if (window.ResizeObserver) { const ro = new ResizeObserver(measureHead); HEAD().forEach((e) => ro.observe(e)); }   // header height changes (fonts, menu wrapping)
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureHead);
 
     const cache = new Map();
     const ready = (img) => {
@@ -90,7 +95,7 @@
     const end = () => { state.finished = true; el.home.classList.remove("on"); };
     function settle() {
       el.statue.classList.remove("rising"); el.statue.classList.add("gilded"); el.intro.classList.add("golden");
-      setTimeout(() => { el.bar.classList.add("on"); end(); }, 2800 * SLOW);
+      setTimeout(() => { showHead(true); end(); }, 2800 * SLOW);
     }
     function rise() {
       if (state.finished || state.rising) return; state.rising = true;
@@ -104,9 +109,10 @@
     function finishNow() {
       if (state.finished) return; cancelAnimationFrame(raf);
       el.statue.classList.add("drawn", "gilded"); setRise(1);
-      el.intro.classList.add("golden"); el.bar.classList.add("on"); end();
+      el.intro.classList.add("golden"); showHead(true); end();
     }
     state.finishNow = finishNow;
+    showHead(false);
     setRise(0);
 
     const t0 = performance.now();
@@ -132,7 +138,6 @@
         ticking = false;
         const h = el.intro.offsetHeight, p = Math.min(1, scrollY / (h * .8));
         el.stage.style.opacity = String(1 - p); el.stage.style.transform = p ? `translateY(${-p * 60}px) scale(${1 - p * .04})` : "";
-        el.bar.classList.toggle("gone", scrollY > h * .55);
       });
     }, { passive: true });
   }
@@ -140,7 +145,7 @@
   /* After the page is re-drawn (language switch, saves): update the words, keep the scene where it is. */
   function sync({ db, lang, user, setting }) {
     if (!root || !state.mounted || !document.getElementById("intro")) return;
-    fillVerse(lang); fillBar(db, lang, setting);
+    fillVerse(lang); fillTitle(lang, setting); measureHead();
     if (el.home) el.home.textContent = lang === "ml" ? "ഹോം ›" : "Home ›";
     if (user && user.role && state.finishNow) state.finishNow();
   }
