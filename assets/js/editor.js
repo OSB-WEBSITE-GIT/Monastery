@@ -181,8 +181,8 @@
 
   /* one light "Edit this section" button per section; everything opens the dashboard */
   const ITEM_KINDS = { tiles: "tile", story: "entry", stats: "figure", steps: "stage", cards: "card", contact: "address" };
-  const MANAGED = { horarium: ["horarium", "timetable"], events: ["events", "events"], news: ["posts", "news"], gallery: ["albums", "gallery"] };
-  const MANAGED_LABEL = { horarium: "✎ Edit timetable", events: "✎ Edit feasts & events", news: "✎ Edit news", gallery: "✎ Edit gallery" };
+  const MANAGED = { horarium: ["horarium", "timetable"], events: ["events", "events"], news: ["posts", "news"], gallery: ["albums", "gallery"], intro: ["verses", "verses"] };
+  const MANAGED_LABEL = { horarium: "✎ Edit timetable", events: "✎ Edit feasts & events", news: "✎ Edit news", gallery: "✎ Edit gallery", intro: "✎ Edit verses" };
   function editButton(label, onClick, cls = "") {
     const b = document.createElement("button"); b.type = "button"; b.className = "cms-edit-btn " + cls; b.textContent = label;
     b.onclick = (e) => { e.preventDefault(); e.stopPropagation(); onClick(); }; return b;
@@ -190,6 +190,7 @@
   function sectionButtons() {
     $$("[data-section]").forEach((secEl) => {
       const s = rowOf("sections", secEl.dataset.section); if (!s) return;
+      if (secEl.querySelector(":scope > .cms-edit-sec")) return;   // the opening scene is not re-drawn, so it may already have its buttons
       const box = document.createElement("div"); box.className = "cms-edit-sec";
       if (s.visible === false) { const t = document.createElement("span"); t.className = "cms-hidden-tag"; t.textContent = "Hidden from visitors"; box.appendChild(t); }
       box.appendChild(editButton("✎ Edit this section", () => dashboard("sections", s.id)));
@@ -213,7 +214,7 @@
     if (ok !== undefined || true) await OSB.reload();
     if ($("#cms-dash-wrap")) refreshDash();
   }
-  const KIND_INFO = { text: "Text block — heading and paragraphs", story: "Story — text with a photo or a list beside it", tiles: "Tiles — a row of short links", stats: "Figures — large numbers with labels", steps: "Steps — a numbered sequence", cards: "Cards — e.g. schools and colleges", contact: "Contact — addresses and phone numbers", horarium: "Daily timetable", events: "Calendar of feasts and events", news: "News & announcements", gallery: "Photo & video gallery", hero: "Large opening image with title" };
+  const KIND_INFO = { text: "Text block — heading and paragraphs", story: "Story — text with a photo or a list beside it", tiles: "Tiles — a row of short links", stats: "Figures — large numbers with labels", steps: "Steps — a numbered sequence", cards: "Cards — e.g. schools and colleges", contact: "Contact — addresses and phone numbers", horarium: "Daily timetable", events: "Calendar of feasts and events", news: "News & announcements", gallery: "Photo & video gallery", hero: "Large opening image with title", intro: "Opening scene: the statue turning to gold, with a verse" };
   function addSectionDialog() {
     const m = modal(`<h2 class="cms-h">Add a section</h2><form class="cms-form" id="ns">
       <label class="cms-field"><span>Type of section</span><select id="ns-kind">${Object.entries(KIND_INFO).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("")}</select></label>
@@ -263,7 +264,7 @@
     albums: () => [["title", "i18n", "Album title"], ["description", "i18nArea", "Description"], ["cover_url", "image", "Cover photo (optional)"], ["published", "bool", "Published"]],
     media_items: () => [["kind", "select", "Type", { options: [["image", "Photo"], ["video", "YouTube video"]] }], ["url", "image", "Photo"],
       ["youtube_id", "text", "YouTube link or video ID"], ["caption", "i18n", "Caption"]],
-    verses: () => [["text", "i18nArea", "Verse"], ["reference", "i18n", "Reference (e.g. Psalm 119:164 · Rule of St. Benedict, ch. 16)"], ["published", "bool", "Shown on the welcome screen"]],
+    verses: () => [["text", "i18nArea", "Verse"], ["reference", "i18n", "Reference (e.g. Psalm 119:164 · Rule of St. Benedict, ch. 16)"], ["published", "bool", "Shown in the opening scene"]],
   };
   const TABS = [
     ["sections", "Page sections"], ["menu_items", "Menu", true], ["horarium", "Daily timetable"], ["events", "Feasts & events"],
@@ -357,7 +358,7 @@
     horarium: "The daily timetable. Times are monastery time (India). The entry happening now is highlighted on the site.",
     events: "Feasts and events. Only today's and future dates appear on the site.",
     posts: "News and announcements. The pinned post appears first and largest.",
-    verses: "Short verses shown on the welcome screen. Each visitor sees one, chosen at random, on their first visit each day. Add the Malayalam text when it is available.",
+    verses: "Short verses shown under the statue in the opening scene. Each time the website opens, one is chosen at random. Add the Malayalam text when it is available.",
     albums: "Photo and video albums. Open an album to add photos or YouTube videos.",
   };
   function listView(p, table, opts = {}) {
@@ -420,7 +421,8 @@
       if (r.kind === "story") return `<label class="cms-field" data-key="settings.layout" data-type="select"><span>${esc(label)}</span><select id="f-layout"><option value="image" ${st.layout !== "list" ? "selected" : ""}>Photo with the text; items shown as a timeline</option><option value="list" ${st.layout === "list" ? "selected" : ""}>List of items beside the text</option></select></label>
         <label class="cms-field" data-key="settings.photo_position" data-type="select"><span>Photo position</span><select id="f-photo_position"><option value="above" ${st.photo_position !== "beside" ? "selected" : ""}>Above the text, full width (after the heading)</option><option value="beside" ${st.photo_position === "beside" ? "selected" : ""}>Beside the text</option></select><small>Changing this changes the photo's frame shape; use Adjust afterwards to check what shows.</small></label>`;
       if (r.kind === "events" || r.kind === "news") return `<label class="cms-field" data-key="settings.limit" data-type="number"><span>How many to show</span><input id="f-limit" type="number" min="1" max="24" value="${esc(st.limit || (r.kind === "news" ? 3 : 6))}"></label>`;
-      if (r.kind === "cards") return `<label class="cms-field" data-key="settings.photo" data-type="select"><span>Photo shape</span><select id="f-photo"><option value="wide" ${st.photo !== "portrait" ? "selected" : ""}>Wide (buildings, places)</option><option value="portrait" ${st.photo === "portrait" ? "selected" : ""}>Square portrait (people)</option></select></label>`;
+      if (r.kind === "cards") return `<label class="cms-field" data-key="settings.photo" data-type="select"><span>Photo shape</span><select id="f-photo"><option value="wide" ${st.photo !== "portrait" ? "selected" : ""}>Wide (buildings, places)</option><option value="portrait" ${st.photo === "portrait" ? "selected" : ""}>Square portrait (people)</option></select></label>
+        <label class="cms-check" data-key="settings.feature_first" data-type="bool"><input type="checkbox" id="f-feature" ${st.feature_first ? "checked" : ""}> Show the first item large, in the centre, with the others below it</label>`;
       if (r.kind === "hero") return `<label class="cms-check" data-key="settings.show_now" data-type="bool"><input type="checkbox" id="f-shownow" ${st.show_now !== false ? "checked" : ""}> Show “Now at Mariamala” in the top bar</label>`;
       return "";
     }

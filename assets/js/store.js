@@ -143,7 +143,7 @@
   }
 
   /* ---------------- Demo (offline) ---------------- */
-  const KEY = "osb-cms-demo-v8", UKEY = "osb-cms-demo-user";
+  const KEY = "osb-cms-demo-v9", UKEY = "osb-cms-demo-user";
   const mem = {};
   const ls = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return mem[k] ?? null; } },

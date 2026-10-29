@@ -163,10 +163,15 @@
   R.steps = (s) => `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${head(s)}
     <ol class="steps">${items(s).map((it) => `<li ${rowAttr("section_items", it)}>${T("span", "section_items", it.id, "title", it.title, "t")}${T("span", "section_items", it.id, "body", it.body, "d")}</li>`).join("")}</ol>${cta(s)}</div></section>`;
   R.cards = (s) => {
-    const its = items(s);
+    const its = items(s), st = s.settings || {};
+    const card = (it, cls = "") => `<div class="card ${cls}" ${rowAttr("section_items", it)}>${PH(st.photo === "portrait" ? "portrait" : "card", "section_items", it.id, "image_url", it.image_url, tr(it.title).v)}${T("span", "section_items", it.id, "label", it.label, "label")}${T("span", "section_items", it.id, "title", it.title, "t")}${T("div", "section_items", it.id, "body", it.body, "d", "rich")}${it.link ? `<a href="${esc(safeUrl(it.link))}"${ext(it.link)}>${esc(L("read_more"))} →</a>` : ""}</div>`;
+    // "feature_first": the first card is shown large in the centre, the others below it
+    const feature = st.feature_first && its.length > 1;
+    const list = feature ? its.slice(1) : its;
     return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${its.length ? head(s) : headNoBody(s)}
       ${its.length ? "" : `<div class="note">${T("div", "sections", s.id, "body", s.body, "", "rich") || esc(L("empty_cards"))}</div>`}
-      ${its.length ? `<div class="cards ${(s.settings || {}).photo === "portrait" ? "portrait" : ""}">${its.map((it) => `<div class="card" ${rowAttr("section_items", it)}>${PH((s.settings || {}).photo === "portrait" ? "portrait" : "card", "section_items", it.id, "image_url", it.image_url, tr(it.title).v)}${T("span", "section_items", it.id, "label", it.label, "label")}${T("span", "section_items", it.id, "title", it.title, "t")}${T("div", "section_items", it.id, "body", it.body, "d", "rich")}${it.link ? `<a href="${esc(safeUrl(it.link))}"${ext(it.link)}>${esc(L("read_more"))} →</a>` : ""}</div>`).join("")}</div>` : ""}
+      ${feature ? `<div class="card-feature">${card(its[0], "featured")}</div>` : ""}
+      ${list.length ? `<div class="cards ${st.photo === "portrait" ? "portrait" : ""} ${feature ? "under-feature" : ""}">${list.map((it) => card(it)).join("")}</div>` : ""}
       ${cta(s)}</div></section>`;
   };
   R.contact = (s) => `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${headNoBody(s)}
@@ -332,11 +337,12 @@
     const hi = secs.findIndex((s) => s.kind === "hero");
     if (hi >= 0 && secs[hi + 1] && secs[hi + 1].kind === "tiles" && !tr(secs[hi + 1].title).v) heroTiles = secs[hi + 1];
     chrome();
-    $("#main").innerHTML = secs.filter((s) => s !== heroTiles).map((s) => (R[s.kind] || R.text)(s).replace(/data-section="([^"]+)"/, `data-section="$1"${s.visible === false ? ' data-hidden="1"' : ""} data-kind="${s.kind}"`)).join("");
+    $("#main").innerHTML = secs.filter((s) => s !== heroTiles && s.kind !== "intro").map((s) => (R[s.kind] || R.text)(s).replace(/data-section="([^"]+)"/, `data-section="$1"${s.visible === false ? ' data-hidden="1"' : ""} data-kind="${s.kind}"`)).join("");
     // every second section (after the opening image) gets the band colour
     const bands = th.bands !== false; let n = 0;
     document.querySelectorAll("#main > section.block").forEach((el) => { if (el.dataset.hidden === "1" && !S.editing) return; el.classList.toggle("band", bands && n++ % 2 === 1); });
     updateNow();
+    if (OSB.Intro && OSB.Intro.isMounted()) OSB.Intro.sync({ db: S.db, lang: S.lang, user: S.user, setting });
     if (OSB.afterRender) OSB.afterRender();
   };
 
@@ -425,7 +431,7 @@
       wire();
       document.getElementById("boot").remove();
       document.getElementById("app").hidden = false;
-      if (OSB.Welcome) { try { OSB.Welcome.maybeShow({ db: S.db, lang: S.lang, user: S.user, emblem: setting("site").emblem_url }); } catch (e) { console.warn(e); } }
+      if (OSB.Intro) { try { OSB.Intro.mount({ db: S.db, lang: S.lang, user: S.user, setting }); } catch (e) { console.warn("Opening scene:", e); } }
       if (OSB.editorInit) OSB.editorInit();
     } catch (err) {
       console.error(err);
