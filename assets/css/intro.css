@@ -68,7 +68,7 @@
 #intro.golden .ix-bible .pg{fill:color-mix(in srgb,var(--intro-panel) 80%,#fff)}
 
 /* the site's own header and menu are above the scene; hidden while the animation plays, then they fade in */
-body.ix-wait #masthead,body.ix-wait #nav{opacity:0;pointer-events:none}
+body.ix-wait #masthead,body.ix-wait #nav{opacity:0;pointer-events:none;transition:none}   /* hidden at once (no fade-out); only the fade-in is animated */
 #masthead,#nav{transition:opacity calc(1.2s * var(--intro-slow)) ease}
 
 /* Home: skips the animation to its end */
