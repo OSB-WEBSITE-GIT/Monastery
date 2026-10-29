@@ -282,7 +282,7 @@
       <div class="foot-bottom"><span>© ${new Date().getFullYear()} · ${esc(tr(site.name).v.replace(/<[^>]+>/g, ""))}</span>
       <button type="button" class="signin-link" id="signin-link">${S.user ? esc(S.user.email) : esc(L("sign_in"))}</button></div></div>`;
   }
-  const PALETTES = [["ivory", "Ivory White", "ഐവറി വൈറ്റ്", "#ffffff", "#8a6a2b"], ["marian", "Marian Blue", "മരിയൻ ബ്ലൂ", "#ffffff", "#2a4a86"], ["sage", "Vallombrosa Sage", "വല്ലോംബ്രോസ സേജ്", "#ffffff", "#556b3e"], ["parchment", "Parchment", "പാർച്ച്മെന്റ്", "#f3ede0", "#8f6f2e"], ["night", "Benedictine Night", "ബെനഡിക്ടൈൻ നൈറ്റ്", "#1c1814", "#d1b06d"]];
+  const PALETTES = [["ivory", "Ivory White", "ഐവറി വൈറ്റ്", "#ffffff", "#8a6a2b"], ["marian", "Marian Blue", "മരിയൻ ബ്ലൂ", "#ffffff", "#2a4a86"], ["sage", "Vallombrosa Sage", "വല്ലോംബ്രോസ സേജ്", "#ffffff", "#556b3e"], ["parchment", "Parchment", "പാർച്ച്മെന്റ്", "#f3ede0", "#8f6f2e"], ["night", "Benedictine Night", "ബെനഡിക്ടൈൻ നൈറ്റ്", "#1c1814", "#d1b06d"], ["rose", "Rose", "റോസ്", "#ffffff", "#ec776e"]];
   OSB.PALETTES = PALETTES;
   function palettePicker() {
     return `<div class="palette" role="group" aria-labelledby="pal-label"><span class="label" id="pal-label">${esc(L("theme"))}</span><div class="swatches">

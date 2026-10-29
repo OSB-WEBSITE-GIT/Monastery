@@ -66,7 +66,7 @@
     // a picture without transparency (JPEG) is blended so its white background disappears into the white page
     const blend = (url) => (url && !/\.png$|^data:image\/png/i.test(OSB.Photo ? OSB.Photo.fileOf(url) : url) ? " ix-blend" : "");
     verse = pickVerse(db, lang);
-    const SLOW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--intro-slow")) || 1.6;   // set in intro.css
+    const SLOW = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--intro-slow")) || .6;   // set in intro.css
     const T = { minStart: 1300 * SLOW, rise: 4200 * SLOW, homeAt: 4000, waitGold: 6000 };
 
     root.innerHTML = `<section id="intro" aria-label="${esc(plain(tr(sec.title, lang)) || "Welcome")}" data-section="${esc(sec.id)}" data-kind="intro"><div class="ix-aura" aria-hidden="true"></div><div class="ix-stage">
