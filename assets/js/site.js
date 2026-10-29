@@ -256,7 +256,7 @@
         const m = mediaOf(a); const cover = a.cover_url || (m.find((x) => x.kind === "image") || {}).url;
         return `<article class="album" ${rowAttr("albums", a)} data-open-album="${a.id}" tabindex="0" role="button">
           <div class="cover">${cover ? Photo().frame("cover", cover) : esc(L("empty_album"))}</div>
-          ${T("h3", "albums", a.id, "title", a.title, "t")}<span class="n">${m.length} ${esc(L("items"))}</span></article>`;
+          ${T("h3", "albums", a.id, "title", a.title, "t")}<span class="n">${m.length} ${esc(m.length === 1 && S.lang !== "ml" ? L("items").replace(/s$/, "") : L("items"))}</span></article>`;
       }).join("")}</div></div></section>`;
   };
 
