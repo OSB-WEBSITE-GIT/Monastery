@@ -164,7 +164,8 @@
     <ol class="steps">${items(s).map((it) => `<li ${rowAttr("section_items", it)}>${T("span", "section_items", it.id, "title", it.title, "t")}${T("span", "section_items", it.id, "body", it.body, "d")}</li>`).join("")}</ol>${cta(s)}</div></section>`;
   R.cards = (s) => {
     const its = items(s), st = s.settings || {};
-    const card = (it, cls = "") => `<div class="card ${cls}" ${rowAttr("section_items", it)}>${PH(st.photo === "portrait" ? "portrait" : "card", "section_items", it.id, "image_url", it.image_url, tr(it.title).v)}${T("span", "section_items", it.id, "label", it.label, "label")}${T("span", "section_items", it.id, "title", it.title, "t")}${T("div", "section_items", it.id, "body", it.body, "d", "rich")}${it.link ? `<a href="${esc(safeUrl(it.link))}"${ext(it.link)}>${esc(L("read_more"))} →</a>` : ""}</div>`;
+    // the featured card shows the whole photo (not cropped) on the left, with the text on the right
+    const card = (it, cls = "") => `<div class="card ${cls}" ${rowAttr("section_items", it)}>${PH(cls === "featured" ? "full" : st.photo === "portrait" ? "portrait" : "card", "section_items", it.id, "image_url", it.image_url, tr(it.title).v)}${cls === "featured" ? '<div class="card-text">' : ""}${T("span", "section_items", it.id, "label", it.label, "label")}${T("span", "section_items", it.id, "title", it.title, "t")}${T("div", "section_items", it.id, "body", it.body, "d", "rich")}${it.link ? `<a href="${esc(safeUrl(it.link))}"${ext(it.link)}>${esc(L("read_more"))} →</a>` : ""}${cls === "featured" ? "</div>" : ""}</div>`;
     // "feature_first": the first card is shown large in the centre, the others below it
     const feature = st.feature_first && its.length > 1;
     const list = feature ? its.slice(1) : its;
@@ -338,9 +339,9 @@
     if (hi >= 0 && secs[hi + 1] && secs[hi + 1].kind === "tiles" && !tr(secs[hi + 1].title).v) heroTiles = secs[hi + 1];
     chrome();
     $("#main").innerHTML = secs.filter((s) => s !== heroTiles && s.kind !== "intro").map((s) => (R[s.kind] || R.text)(s).replace(/data-section="([^"]+)"/, `data-section="$1"${s.visible === false ? ' data-hidden="1"' : ""} data-kind="${s.kind}"`)).join("");
-    // every second section (after the opening image) gets the band colour
+    // the band colour on every second section, starting with the first one (Leadership)
     const bands = th.bands !== false; let n = 0;
-    document.querySelectorAll("#main > section.block").forEach((el) => { if (el.dataset.hidden === "1" && !S.editing) return; el.classList.toggle("band", bands && n++ % 2 === 1); });
+    document.querySelectorAll("#main > section.block").forEach((el) => { if (el.dataset.hidden === "1" && !S.editing) return; el.classList.toggle("band", bands && n++ % 2 === 0); });
     updateNow();
     if (OSB.Intro && OSB.Intro.isMounted()) OSB.Intro.sync({ db: S.db, lang: S.lang, user: S.user, setting });
     if (OSB.afterRender) OSB.afterRender();
