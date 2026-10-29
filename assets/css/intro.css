@@ -1,4 +1,4 @@
-/* Opening scene (assets/js/intro.js). Everything here is scoped to #intro, .ix-bar and .ix-home, so it never affects
+/* Opening scene (assets/js/intro.js). Everything here is scoped to #intro and .ix-home (plus hiding the header while the animation plays), so it never affects
    the rest of the site, and a change to the scene never needs a change anywhere else.
 
    ===== Settings: change these numbers only =====
@@ -14,13 +14,15 @@
 
 #intro{
   --ix-ink:#241c14; --ix-ink-soft:#5c4f42; --ix-gold:#c9a24a; --ix-gold-light:#efd79a; --ix-slow:var(--intro-slow);
-  position:relative;height:100svh;min-height:560px;background:#fff;color:var(--ix-ink);overflow:hidden}
-#intro .ix-stage{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:clamp(.6rem,1.6vh,1.1rem);
-  padding:clamp(108px,15vh,124px) max(16px,env(safe-area-inset-right,0px)) clamp(32px,5vh,56px) max(16px,env(safe-area-inset-left,0px));will-change:opacity,transform}
+  position:relative;height:calc(100svh - var(--ix-head,150px));min-height:480px;background:#fff;color:var(--ix-ink);overflow:hidden}
+#intro .ix-stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding:clamp(12px,2vh,24px) max(16px,env(safe-area-inset-right,0px)) clamp(16px,3vh,32px) max(16px,env(safe-area-inset-left,0px));will-change:opacity,transform}
+@media (max-width:760px){#intro{--ix-overlap:44px}}
+#intro .ix-foot{display:flex;align-items:center;justify-content:center;gap:.7rem;flex-wrap:wrap}
 #intro .ix-title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;margin:0}
 
 /* the statue: silver picture underneath, gold picture fading in over it (both cut out, no background) */
-#intro .ix-statue{position:relative;height:min(50svh,calc(100svh - 400px),620px);min-height:200px;aspect-ratio:972/1619;max-width:100%;margin:0;animation:ix-drift calc(14s * var(--ix-slow)) ease-out both}
+#intro .ix-statue{position:relative;flex:1 1 auto;min-height:0;max-height:930px;height:auto;aspect-ratio:972/1619;max-width:100%;margin:0;animation:ix-drift calc(14s * var(--ix-slow)) ease-out both}
 @keyframes ix-drift{from{transform:scale(1)}to{transform:scale(1.04)}}
 #intro .ix-statue img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;max-width:none}
 #intro .ix-start{opacity:0;transition:opacity calc(.9s * var(--ix-slow)) ease}
@@ -44,18 +46,18 @@
 #intro.golden .ix-aura{opacity:1}
 
 /* the words: dark ink at first, then gold on a grey panel */
-#intro .ix-plaque{margin-top:clamp(.4rem,1.5vh,1rem);display:grid;justify-items:center;gap:clamp(.5rem,1.4vh,.9rem);width:min(40rem,100%);
-  padding:clamp(.9rem,2.2vh,1.4rem) clamp(1.2rem,4vw,2.6rem);border-radius:3px;background:transparent;
+#intro .ix-plaque{position:relative;z-index:2;flex:none;margin-top:calc(-1 * var(--ix-overlap,64px));display:grid;justify-items:center;gap:.45rem;width:min(40rem,100%);
+  padding:clamp(.7rem,1.6vh,1rem) clamp(1.2rem,4vw,2.4rem);border-radius:3px;background:rgba(255,255,255,.88);box-shadow:0 6px 24px rgba(40,30,15,.08);
   transition:background-color calc(2.2s * var(--ix-slow)) ease,box-shadow calc(2.2s * var(--ix-slow)) ease}
 #intro.golden .ix-plaque{background:var(--intro-panel);box-shadow:0 10px 30px rgba(40,30,15,.18)}
-#intro .ix-verse{margin:0;max-width:34rem;text-align:center;font-family:var(--f-display);font-style:italic;font-weight:500;
+#intro .ix-verse{margin:0;max-width:40rem;text-align:center;font-family:var(--f-display);font-style:italic;font-weight:500;
   font-size:clamp(1.15rem,2.3vw,1.7rem);line-height:1.3;text-wrap:balance;color:var(--ix-ink);opacity:0;animation:ix-fade .9s .15s ease forwards;
   background-image:linear-gradient(100deg,#b8892f 0%,var(--ix-gold-light) 40%,#fff6d8 50%,var(--ix-gold-light) 60%,#b8892f 100%);background-size:300% 100%;background-position:100% 0;
   -webkit-background-clip:text;background-clip:text;transition:color calc(1.8s * var(--ix-slow)) ease}
 #intro .ix-verse:lang(ml){font-family:"Noto Serif Malayalam",serif;font-style:normal;font-size:clamp(1.05rem,2vw,1.45rem);line-height:1.55}
 #intro .ix-ref{font-family:var(--f-label);font-size:clamp(.62rem,1.1vw,.74rem);letter-spacing:.16em;text-transform:uppercase;color:var(--ix-ink-soft);text-align:center;max-width:34rem;
   opacity:0;animation:ix-fade .9s .35s ease forwards;transition:color calc(1.8s * var(--ix-slow)) ease}
-#intro .ix-bible{width:clamp(46px,6vw,62px);height:auto;color:var(--ix-ink);opacity:0;animation:ix-fade .9s .5s ease forwards;transition:color calc(1.8s * var(--ix-slow)) ease}
+#intro .ix-bible{width:clamp(30px,3.4vw,40px);flex:none;height:auto;color:var(--ix-ink);opacity:0;animation:ix-fade .9s .5s ease forwards;transition:color calc(1.8s * var(--ix-slow)) ease}
 #intro .ix-bible .pg{fill:transparent;transition:fill calc(2s * var(--ix-slow)) ease}
 @keyframes ix-fade{to{opacity:1}}
 #intro.golden .ix-verse{color:transparent;animation:ix-fade .9s .15s ease forwards,ix-shine calc(2.8s * var(--ix-slow)) .2s ease forwards}
@@ -64,22 +66,9 @@
 #intro.golden .ix-bible{color:var(--ix-gold-light)}
 #intro.golden .ix-bible .pg{fill:color-mix(in srgb,var(--intro-panel) 80%,#fff)}
 
-/* menu over the scene: the site's own menu colours; the site's menu takes over once the visitor scrolls past */
-.ix-bar{position:fixed;inset:0 0 auto;z-index:30;display:flex;align-items:center;gap:.4rem 1.6rem;flex-wrap:wrap;background:var(--hl,#e9c46a);box-shadow:0 1px 0 rgba(0,0,0,.06);
-  padding:calc(.7rem + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) .7rem max(16px,env(safe-area-inset-left,0px));
-  opacity:0;transform:translateY(-8px);pointer-events:none;
-  transition:opacity calc(1.2s * var(--intro-slow)) ease,transform calc(1.2s * var(--intro-slow)) ease}
-.ix-bar.on{opacity:1;transform:none;pointer-events:auto}
-.ix-bar.gone{opacity:0;pointer-events:none;transition:opacity .35s}
-.ix-brand{display:flex;align-items:center;gap:.6rem;color:var(--hl-ink,#2a1f10);text-decoration:none;font-family:var(--f-display);font-size:1.25rem;line-height:1.1;white-space:nowrap}
-.ix-brand img{width:40px;height:auto}
-.ix-bar nav{display:flex;gap:.2rem 1.3rem;overflow-x:auto;scrollbar-width:none;order:3;width:100%;justify-content:center;min-width:0;max-width:100%}
-.ix-bar nav::-webkit-scrollbar{display:none}
-.ix-bar nav a,.ix-lang button{font-family:var(--f-label);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--hl-ink,#2a1f10);text-decoration:none;white-space:nowrap;padding:.35rem 0;border:0;border-bottom:1px solid transparent;background:none;cursor:pointer}
-html[lang="ml"] .ix-bar nav a{font-family:"Noto Serif Malayalam",serif;letter-spacing:0;text-transform:none;font-size:.88rem}
-.ix-bar nav a:hover,.ix-bar nav a:focus-visible,.ix-lang button[aria-pressed="true"]{border-bottom-color:currentColor;outline:none}
-.ix-lang{display:flex;gap:.5rem;align-items:center;color:var(--hl-ink,#2a1f10);margin-left:auto}
-@media (max-width:760px){.ix-bar nav{justify-content:flex-start}.ix-brand span{font-size:1.05rem}#intro .ix-stage{padding-top:112px}}
+/* the site's own header and menu are above the scene; hidden while the animation plays, then they fade in */
+body.ix-wait #masthead,body.ix-wait #nav{opacity:0;pointer-events:none}
+#masthead,#nav{transition:opacity calc(1.2s * var(--intro-slow)) ease}
 
 /* Home: skips the animation to its end */
 .ix-home{position:fixed;z-index:31;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));
