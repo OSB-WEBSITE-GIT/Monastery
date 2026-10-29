@@ -16,6 +16,9 @@
 :root[data-palette="night"]{
   --bg:#1c1814; --bg-2:#26201a; --ink:#efe5d3; --ink-soft:#c2b49e;
   --accent:#d1b06d; --accent-ink:#1c1814; --rule:#3e352b; --plate:rgba(28,24,20,.9); color-scheme:dark; --band:#26201a; --hl:#d1b06d; --hl-ink:#1c1814; --hl-line:#1c1814;}
+:root[data-palette="rose"]{
+  --bg:#ffffff; --bg-2:#fbeeed; --ink:#2a1c1b; --ink-soft:#5e4744;
+  --accent:#a8463e; --accent-ink:#ffffff; --rule:#ecd3d0; --plate:rgba(255,255,255,.94); color-scheme:light; --band:#f0c9c6; --hl:#ec776e; --hl-ink:#2a1410; --hl-line:#2a1410;}
 :root{
   --f-display:"Cormorant Garamond","Noto Serif Malayalam",Georgia,serif;
   --f-body:"Crimson Pro","Noto Serif Malayalam",Georgia,serif;
@@ -238,15 +241,17 @@ html[lang="ml"] .album .t{font-family:inherit;font-size:1.02rem}
 .cards.portrait .card{border:0;padding:0;text-align:left}
 .cards.portrait .card .ph{border:1px solid var(--rule)}
 .card-feature{display:grid;margin-bottom:clamp(1.5rem,4vw,2.5rem)}
-.card.featured{border:0;padding:0;width:100%;display:grid;grid-template-columns:minmax(0,26rem) minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);align-items:center;text-align:left}
+.card.featured{border:0;padding:0;width:100%;display:grid;grid-template-columns:minmax(0,26rem) minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);align-items:start;text-align:left}
 .card.featured .ph-whole{width:100%;height:auto;border:1px solid var(--rule);display:block}
-.card.featured .card-text{display:grid;gap:.5rem;align-content:center;min-width:0}
+.card.featured .card-text{display:grid;gap:.5rem;align-content:start;min-width:0}
 .card.featured .d{max-width:38rem;margin-top:.4rem}
 @media (max-width:760px){.card.featured{grid-template-columns:1fr;justify-items:center}.card.featured .ph-whole{max-width:24rem}}
 .card.featured .t{font-size:clamp(1.6rem,3vw,2.1rem);line-height:1.15}
 /* the people below the featured one line up under its photo, on the same left edge as the heading */
 .cards.under-feature{grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),12.4rem));justify-content:start}
 .cards.under-feature .card{text-align:left}
+/* sections reached from the menu or the Next button start below the sticky menu */
+#main > [data-section]{scroll-margin-top:56px}
 .card ul{margin:0;padding-left:1.1rem;color:var(--ink-soft)}
 .card .t{font-family:var(--f-display);font-size:1.3rem;font-weight:600}
 html[lang="ml"] .card .t{font-family:inherit;font-size:1.04rem}

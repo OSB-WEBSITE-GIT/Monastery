@@ -2,12 +2,12 @@
    the rest of the site, and a change to the scene never needs a change anywhere else.
 
    ===== Settings: change these numbers only =====
-     --intro-slow      speed of the whole scene: 1 = quick, 1.6 = 60% slower, 2 = twice as slow
+     --intro-slow      speed of the whole scene: .6 = about 5 seconds, 1 = about 8 s, 1.6 = about 13 s
      --intro-rays      strength of the light rays: 0 = none, 1 = as designed, 1.5 = stronger
      --intro-panel     colour of the panel behind the golden verse
    ================================================ */
 :root{
-  --intro-slow:1.6;
+  --intro-slow:.6;
   --intro-rays:1;
   --intro-panel:#3b3733;
 }
@@ -36,12 +36,12 @@
 
 /* divine aura: soft rays of light from above, behind the statue; the ground stays white */
 #intro .ix-aura{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity calc(3.5s * var(--ix-slow)) ease;
-  -webkit-mask-image:radial-gradient(ellipse 60% 75% at 50% 18%,#000 30%,transparent 78%);mask-image:radial-gradient(ellipse 60% 75% at 50% 18%,#000 30%,transparent 78%)}
-#intro .ix-aura::before{content:"";position:absolute;left:50%;top:-12%;width:170vmax;height:170vmax;transform:translateX(-50%);transform-origin:50% 0;
+  -webkit-mask-image:radial-gradient(ellipse 100% 85% at var(--ix-cx,50%) 18%,#000 30%,transparent 80%);mask-image:radial-gradient(ellipse 100% 85% at var(--ix-cx,50%) 18%,#000 30%,transparent 80%)}
+#intro .ix-aura::before{content:"";position:absolute;left:var(--ix-cx,50%);top:-12%;width:170vmax;height:170vmax;transform:translateX(-50%);transform-origin:50% 0;
   background:repeating-conic-gradient(from 168deg at 50% 0%,rgba(214,176,92,0) 0deg,rgba(214,176,92,calc(.16 * var(--intro-rays))) 1.6deg,rgba(214,176,92,0) 4.2deg,rgba(214,176,92,0) 7deg);
-  -webkit-mask-image:conic-gradient(from 150deg at 50% 0%,transparent 0deg,#000 18deg,#000 42deg,transparent 60deg);mask-image:conic-gradient(from 150deg at 50% 0%,transparent 0deg,#000 18deg,#000 42deg,transparent 60deg);
+  -webkit-mask-image:conic-gradient(from 120deg at 50% 0%,transparent 0deg,#000 30deg,#000 90deg,transparent 120deg);mask-image:conic-gradient(from 120deg at 50% 0%,transparent 0deg,#000 30deg,#000 90deg,transparent 120deg);
   animation:ix-sway calc(18s * var(--ix-slow)) ease-in-out infinite alternate}
-#intro .ix-aura::after{content:"";position:absolute;left:50%;top:24%;width:min(70vh,560px);height:min(70vh,560px);transform:translate(-50%,-50%);border-radius:50%;
+#intro .ix-aura::after{content:"";position:absolute;left:var(--ix-cx,50%);top:24%;width:min(140vh,1120px);height:min(70vh,560px);transform:translate(-50%,-50%);border-radius:50%;
   background:radial-gradient(circle,rgba(240,206,128,calc(.38 * var(--intro-rays))) 0%,rgba(240,206,128,calc(.14 * var(--intro-rays))) 38%,transparent 68%)}
 @keyframes ix-sway{from{transform:translateX(-50%) rotate(-2.5deg)}to{transform:translateX(-50%) rotate(2.5deg)}}
 #intro.golden .ix-aura{opacity:1}
