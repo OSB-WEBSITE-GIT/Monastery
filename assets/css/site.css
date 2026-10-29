@@ -237,15 +237,16 @@ html[lang="ml"] .album .t{font-family:inherit;font-size:1.02rem}
 .cards.portrait{grid-template-columns:repeat(auto-fill,minmax(min(100%,13rem),1fr))}
 .cards.portrait .card{border:0;padding:0;text-align:left}
 .cards.portrait .card .ph{border:1px solid var(--rule)}
-.card-feature{display:grid;justify-items:center;margin-bottom:clamp(1.5rem,4vw,2.5rem)}
-.card.featured{border:0;padding:0;width:min(100%,64rem);display:grid;grid-template-columns:minmax(0,26rem) minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);align-items:center;text-align:left}
+.card-feature{display:grid;margin-bottom:clamp(1.5rem,4vw,2.5rem)}
+.card.featured{border:0;padding:0;width:100%;display:grid;grid-template-columns:minmax(0,26rem) minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);align-items:center;text-align:left}
 .card.featured .ph-whole{width:100%;height:auto;border:1px solid var(--rule);display:block}
 .card.featured .card-text{display:grid;gap:.5rem;align-content:center;min-width:0}
 .card.featured .d{max-width:38rem;margin-top:.4rem}
 @media (max-width:760px){.card.featured{grid-template-columns:1fr;justify-items:center}.card.featured .ph-whole{max-width:24rem}}
 .card.featured .t{font-size:clamp(1.6rem,3vw,2.1rem);line-height:1.15}
-.cards.under-feature{grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),15rem));justify-content:center}
-.cards.under-feature .card{text-align:center;justify-items:center}
+/* the people below the featured one line up under its photo, on the same left edge as the heading */
+.cards.under-feature{grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),12.4rem));justify-content:start}
+.cards.under-feature .card{text-align:left}
 .card ul{margin:0;padding-left:1.1rem;color:var(--ink-soft)}
 .card .t{font-family:var(--f-display);font-size:1.3rem;font-weight:600}
 html[lang="ml"] .card .t{font-family:inherit;font-size:1.04rem}
