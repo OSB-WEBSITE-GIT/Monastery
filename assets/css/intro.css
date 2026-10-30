@@ -44,7 +44,9 @@
 #intro .ix-aura::after{content:"";position:absolute;left:var(--ix-cx,50%);top:24%;width:min(140vh,1120px);height:min(70vh,560px);transform:translate(-50%,-50%);border-radius:50%;
   background:radial-gradient(circle,rgba(240,206,128,calc(.38 * var(--intro-rays))) 0%,rgba(240,206,128,calc(.14 * var(--intro-rays))) 38%,transparent 68%)}
 @keyframes ix-sway{from{transform:translateX(-50%) rotate(-2.5deg)}to{transform:translateX(-50%) rotate(2.5deg)}}
-#intro.golden .ix-aura{opacity:1}
+/* the light comes down from the menu: it is uncovered from the top edge downward */
+#intro .ix-aura{clip-path:inset(0 0 100% 0)}
+#intro.lit .ix-aura{opacity:1;clip-path:inset(0);transition:opacity 1.2s ease,clip-path 1.8s cubic-bezier(.3,.6,.3,1)}
 
 /* the words: dark ink at first, then gold on a grey panel */
 #intro .ix-plaque{position:relative;z-index:2;flex:none;margin-top:calc(-1 * var(--ix-overlap,64px));display:grid;justify-items:center;gap:.45rem;width:min(40rem,100%);
