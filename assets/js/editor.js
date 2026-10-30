@@ -573,7 +573,7 @@
       palette: theme.palette, show_selector: theme.show_selector !== false, bands: theme.bands !== false, emblem_opacity: theme.emblem_opacity };
     const fields = [["name", "rich", "Site name"], ["subtitle", "i18n", "Line under the name"], ["strip", "i18n", "Footer line (e.g. Archeparchy of Kottayam · Syro-Malabar Church)"], ["footer", "i18n", "Footer text"], ["motto", "i18n", "Motto"],
       ["emblem_url", "image", "Emblem"], ["timezone", "text", "Monastery time zone", { help: "Used for the timetable. India is Asia/Kolkata." }],
-      ["palette", "select", "Colour theme for visitors", { options: OSB.PALETTES.map(([k, n]) => [k, n]) }], ["show_selector", "bool", "Show the colour theme picker in the footer (for the demo)"], ["bands", "bool", "Shade every second section with the band colour"],
+      ["palette", "select", "Light colour theme (visitors can switch to the dark theme, Benedictine Night, with ☾ at the top)", { options: OSB.PALETTES.filter(([k]) => ["ivory", "marian"].includes(k)).map(([k, n]) => [k, n]) }], ["bands", "bool", "Shade every second section with the band colour"],
       ["emblem_opacity", "number", "Emblem opacity (0.3 to 1)"]];
     p.innerHTML = `<header class="cms-panel-head"><div><h2>Site settings</h2><p>Name, footer, emblem, colours, and every small label used on the site.</p>
       <div class="cms-actions"><span class="cms-mini">History:</span><button type="button" class="cms-btn" data-shist="site">Site details</button><button type="button" class="cms-btn" data-shist="theme">Colours</button><button type="button" class="cms-btn" data-shist="labels">Labels</button></div></div></header>

@@ -244,8 +244,7 @@
   R.news = (s) => {
     const lim = (s.settings || {}).limit || 3;
     const posts = [...S.db.posts].sort((a, b) => (b.pinned - a.pinned) || (a.published_on < b.published_on ? 1 : -1));
-    const mm = S.db.sections.find((x) => x.slug === "mariamala") || {};
-    const thumb = s.image_url || mm.image_url;   // the section's photo; otherwise the Mariamala photo
+    const thumb = s.image_url || "assets/img/client/mariamala-front.1379.jpg#w=800,1200,1379&f=50,62,1";   // the section's photo; otherwise the monastery building
     const row = (p) => `<article class="news-row ${p.cover_url ? "" : "no-pic"}" ${rowAttr("posts", p)} data-open-post="${p.id}" tabindex="0" role="button">
       ${p.cover_url ? Photo().frame("card", p.cover_url) : ""}
       <div class="nr-text"><span class="when">${esc(fmtDate(p.published_on))}</span>
@@ -320,7 +319,7 @@
     const link = (m) => `<a href="${esc(safeUrl(m.target))}"${ext(m.target)} ${rowAttr("menu_items", m)}>${T("span", "menu_items", m.id, "label", m.label)}</a>`;
     $("#masthead").innerHTML = `<div class="wrap">${site.emblem_url ? `<img class="emblem" src="${esc(site.emblem_url)}" alt="Arms of Vallombrosa" data-img="site_settings|site|emblem_url">` : ""}
       <a class="wordmark" href="#top">${T("span", "site_settings", "site", "name", site.name, "name", "inline")}${T("span", "site_settings", "site", "subtitle", site.subtitle, "sub")}</a>
-      <div class="lang" role="group" aria-label="Language / ഭാഷ"><button type="button" id="lang-en" data-lang="en" lang="en" aria-label="English" title="English" aria-pressed="${S.lang === "en"}">En</button><span aria-hidden="true">/</span><button type="button" id="lang-ml" data-lang="ml" lang="en" aria-label="മലയാളം (Malayalam)" title="മലയാളം" aria-pressed="${S.lang === "ml"}">Ma</button></div></div>`;
+      <button type="button" class="mode-toggle" data-mode-toggle aria-label="${S.mode === "dark" ? "Light theme" : "Dark theme"}" title="${S.mode === "dark" ? "Light theme" : "Dark theme"}">${S.mode === "dark" ? "☀" : "☾"}</button><div class="lang" role="group" aria-label="Language / ഭാഷ"><button type="button" id="lang-en" data-lang="en" lang="en" aria-label="English" title="English" aria-pressed="${S.lang === "en"}">En</button><span aria-hidden="true">/</span><button type="button" id="lang-ml" data-lang="ml" lang="en" aria-label="മലയാളം (Malayalam)" title="മലയാളം" aria-pressed="${S.lang === "ml"}">Ma</button></div></div>`;
     $("#nav").innerHTML = `<div class="wrap"><ul>${menu.map((m) => {
       const k = kids(m);
       return `<li>${k.length ? `<button type="button" data-submenu="${m.id}" ${rowAttr("menu_items", m)}>${T("span", "menu_items", m.id, "label", m.label)} ▾</button>` : link(m)}</li>`;
@@ -330,7 +329,7 @@
     const th = setting("theme");
     $("#footer").innerHTML = `<div class="wrap"><div class="row">${site.emblem_url ? `<img class="emblem" src="${esc(site.emblem_url)}" alt="">` : "<span></span>"}
       <div style="display:grid;gap:.3rem">${T("span", "site_settings", "site", "motto", site.motto, "motto")}${T("span", "site_settings", "site", "footer", site.footer)}${T("span", "site_settings", "site", "strip", site.strip, "foot-strip")}<span class="now-chip" id="now-chip"></span></div></div>
-      ${th.show_selector !== false ? palettePicker() : ""}
+
       <div class="foot-bottom"><span>© ${new Date().getFullYear()} · ${esc(tr(site.name).v.replace(/<[^>]+>/g, ""))}</span>
       <button type="button" class="signin-link" id="signin-link">${S.user ? esc(S.user.email) : esc(L("sign_in"))}</button></div></div>`;
   }
@@ -382,7 +381,8 @@
   OSB.render = function () {
     const th = setting("theme");
     document.documentElement.style.setProperty("--emblem-opacity", th.emblem_opacity ?? 0.65);
-    document.documentElement.setAttribute("data-palette", S.palette || th.palette || "ivory");
+    const light = ["ivory", "marian"].includes(th.palette) ? th.palette : "ivory";
+    document.documentElement.setAttribute("data-palette", S.mode === "dark" ? "night" : light);
     document.documentElement.lang = S.lang;
     const secs = [...S.db.sections].sort((a, b) => a.sort - b.sort);
     // the tiles section directly after the hero is drawn inside the hero band
@@ -457,6 +457,7 @@
   function wire() {
     document.addEventListener("click", (e) => {
       const lb = e.target.closest("[data-lang]"); if (lb) { S.lang = lb.dataset.lang; store("osb-lang", S.lang); OSB.render(); return; }
+      const mt = e.target.closest("[data-mode-toggle]"); if (mt) { S.mode = S.mode === "dark" ? "light" : "dark"; store("osb-mode", S.mode); OSB.render(); return; }
       const pb = e.target.closest("[data-palette]"); if (pb && pb.tagName === "BUTTON") { S.palette = pb.dataset.palette; store("osb-palette", S.palette); OSB.render(); return; }
       const vm = e.target.closest("[data-view-more]"); if (vm) { const l = vm.previousElementSibling; l && l.querySelectorAll(".is-more").forEach((k) => k.classList.remove("is-more")); vm.remove(); return; }
       const tp = e.target.closest("[data-toggle-past]"); if (tp) { const l = tp.nextElementSibling; l.hidden = !l.hidden; tp.setAttribute("aria-expanded", String(!l.hidden)); return; }
@@ -488,6 +489,7 @@
     Photo().installStyles();
     OSB.config = Object.assign({ supabaseUrl: "", supabaseAnonKey: "", seedUrl: "assets/data/seed.json", embedVideos: true }, window.OSB_CONFIG || {});
     S.lang = read("osb-lang") || "en"; S.palette = read("osb-palette");
+    S.mode = read("osb-mode") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");   // starts from the device setting
     try {
       OSB.store = OSB.createStore(OSB.config);
       let ready = true;
