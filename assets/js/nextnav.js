@@ -21,7 +21,9 @@
 .nx .nx-k{opacity:.7}
 .nx .nx-n{overflow:hidden;text-overflow:ellipsis;max-width:22ch}
 body.cms-editing .nx,body:has(#cms-bar) .nx{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-@media (max-width:680px){.nx{font-size:.68rem;padding:.6rem calc(.9rem + env(safe-area-inset-right,0px)) .6rem 1.1rem}.nx .nx-n{max-width:16ch}}
+.nx .nx-a{font-size:1.1em;line-height:1}
+/* phones: about half the size, "NEXT ↓" / "TOP ↑" only */
+@media (max-width:680px){.nx{font-size:.62rem;gap:.35rem;padding:.42rem calc(.65rem + env(safe-area-inset-right,0px)) .42rem .8rem}.nx .nx-n,.nx .nx-c{display:none}.nx .nx-k{opacity:1}}
 @media (max-width:1023.98px){body:has(#cms-bar) .nx{bottom:calc(22px + env(safe-area-inset-bottom,0px))}}
 @media (prefers-reduced-motion:reduce){.nx{transition:none}}`;
     document.head.appendChild(st);
@@ -39,7 +41,8 @@ body.cms-editing .nx,body:has(#cms-bar) .nx{bottom:calc(84px + env(safe-area-ins
   // left end: a little inside the right edge of the content column (where full-width photos end)
   function place() {
     const wrap = document.querySelector("#main .wrap"); if (!wrap) return;
-    const right = wrap.getBoundingClientRect().right, inset = innerWidth <= 680 ? 120 : 170;
+    if (innerWidth <= 680) { btn.style.left = ""; return; }   // phones: small, against the right edge
+    const right = wrap.getBoundingClientRect().right, inset = 170;
     btn.style.left = Math.max(16, Math.round(right - inset)) + "px";
     btn.style.left = btn.offsetWidth > innerWidth - 16 ? "16px" : btn.style.left;
   }
@@ -53,8 +56,9 @@ body.cms-editing .nx,body:has(#cms-bar) .nx{bottom:calc(84px + env(safe-area-ins
     const line = innerHeight * .35, list = stops();
     const next = list.find((s) => s.el.getBoundingClientRect().top > line + 4);
     target = next ? next.el : null;
-    btn.innerHTML = next ? `<span class="nx-k">Next:</span><span class="nx-n">${next.name.replace(/[&<>"]/g, "")}</span><span aria-hidden="true">›</span>`
-      : `<span class="nx-n">Back to top</span><span aria-hidden="true">↑</span>`;
+    // laptops: "NEXT: OUR HOUSES ↓"; phones: just "NEXT ↓" (the name is hidden by the style sheet)
+    btn.innerHTML = next ? `<span class="nx-k">Next<span class="nx-c">:</span></span><span class="nx-n">${next.name.replace(/[&<>"]/g, "")}</span><span class="nx-a" aria-hidden="true">↓</span>`
+      : `<span class="nx-n nx-top-l">Back to</span><span class="nx-k">top</span><span class="nx-a" aria-hidden="true">↑</span>`;
     btn.setAttribute("aria-label", next ? "Next section: " + next.name : "Back to top");
     btn.style.left = ""; btn.classList.add("on"); place();
   }

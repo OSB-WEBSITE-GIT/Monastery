@@ -101,13 +101,14 @@
     const end = () => { state.finished = true; el.home.classList.remove("on"); };
     function settle() {
       el.statue.classList.remove("rising"); el.statue.classList.add("gilded"); el.intro.classList.add("golden");
-      setTimeout(() => { showHead(true); end(); }, 2800 * SLOW);
+      showHead(true); setTimeout(end, 600);
     }
     function rise() {
       if (state.finished || state.rising) return; state.rising = true;
       el.statue.style.setProperty("--sil", `url("${el.gold.currentSrc || el.gold.src}")`);
       el.statue.classList.add("rising");
       setTimeout(() => el.intro.classList.add("golden"), T.rise * .5);
+      setTimeout(() => showHead(true), T.rise * .85);   // the header and menu fade in just before the statue is fully gold
       const s = performance.now();
       const step = (now) => { const p = Math.min(1, (now - s) / T.rise); setRise(ease(p)); if (p < 1) raf = requestAnimationFrame(step); else settle(); };
       raf = requestAnimationFrame(step);
