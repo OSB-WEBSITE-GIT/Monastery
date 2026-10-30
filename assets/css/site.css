@@ -250,6 +250,7 @@ html[lang="ml"] .album .t{font-family:inherit;font-size:1.02rem}
 /* the people below the featured one line up under its photo, on the same left edge as the heading */
 .cards.under-feature{grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),12.4rem));justify-content:start}
 .cards.under-feature .card{text-align:left}
+.cards.under-feature .card > .label:first-child{margin-bottom:.15rem}
 /* sections reached from the menu or the Next button start below the sticky menu */
 #main > [data-section]{scroll-margin-top:56px}
 .card ul{margin:0;padding-left:1.1rem;color:var(--ink-soft)}
