@@ -570,6 +570,39 @@
    "visible": true
   },
   {
+   "id": "b54b3ebd-b996-5f83-adda-47267da7317f",
+   "slug": "new-members",
+   "kind": "members",
+   "eyebrow": {
+    "en": "New members",
+    "ml": "പുതിയ അംഗങ്ങൾ"
+   },
+   "title": {
+    "en": "Recently professed and ordained",
+    "ml": ""
+   },
+   "body": {
+    "en": "",
+    "ml": ""
+   },
+   "image_url": null,
+   "image_caption": {
+    "en": "",
+    "ml": ""
+   },
+   "cta_label": {
+    "en": "",
+    "ml": ""
+   },
+   "cta_link": null,
+   "settings": {
+    "photo": "portrait",
+    "limit": 6
+   },
+   "sort": 110,
+   "visible": false
+  },
+  {
    "id": "a7958de7-5621-57c7-b89f-41684272e961",
    "slug": "italy",
    "kind": "cards",
@@ -596,7 +629,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 110,
+   "sort": 120,
    "visible": true
   },
   {
@@ -628,7 +661,7 @@
    "settings": {
     "layout": "image"
    },
-   "sort": 120,
+   "sort": 130,
    "visible": true
   },
   {
@@ -658,7 +691,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 130,
+   "sort": 140,
    "visible": true
   },
   {
@@ -688,7 +721,7 @@
    },
    "cta_link": "#contact",
    "settings": {},
-   "sort": 140,
+   "sort": 150,
    "visible": true
   },
   {
@@ -718,7 +751,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 150,
+   "sort": 160,
    "visible": true
   },
   {
@@ -750,7 +783,7 @@
    "settings": {
     "layout": "image"
    },
-   "sort": 160,
+   "sort": 170,
    "visible": true
   },
   {
@@ -782,7 +815,7 @@
    "settings": {
     "limit": 6
    },
-   "sort": 170,
+   "sort": 180,
    "visible": true
   },
   {
@@ -814,8 +847,40 @@
    "settings": {
     "limit": 3
    },
-   "sort": 180,
+   "sort": 190,
    "visible": true
+  },
+  {
+   "id": "4ba97752-6f69-5f98-98ba-55163443f463",
+   "slug": "creative",
+   "kind": "creative",
+   "eyebrow": {
+    "en": "Creative corner",
+    "ml": "സർഗ്ഗവേദി"
+   },
+   "title": {
+    "en": "Writing, art and films",
+    "ml": ""
+   },
+   "body": {
+    "en": "",
+    "ml": ""
+   },
+   "image_url": null,
+   "image_caption": {
+    "en": "",
+    "ml": ""
+   },
+   "cta_label": {
+    "en": "",
+    "ml": ""
+   },
+   "cta_link": null,
+   "settings": {
+    "limit": 6
+   },
+   "sort": 200,
+   "visible": false
   },
   {
    "id": "58c03271-0951-5037-a590-71a8160ec0e0",
@@ -844,7 +909,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 190,
+   "sort": 210,
    "visible": true
   },
   {
@@ -874,7 +939,7 @@
    },
    "cta_link": null,
    "settings": {},
-   "sort": 200,
+   "sort": 220,
    "visible": true
   }
  ],
