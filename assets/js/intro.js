@@ -108,7 +108,9 @@
       el.statue.style.setProperty("--sil", `url("${el.gold.currentSrc || el.gold.src}")`);
       el.statue.classList.add("rising");
       setTimeout(() => el.intro.classList.add("golden"), T.rise * .5);
-      setTimeout(() => showHead(true), T.rise * .85);   // the header and menu fade in just before the statue is fully gold
+      // the header and menu start to fade in 3.0 seconds after the page opens (MENU_AT, in milliseconds)
+      const MENU_AT = 3000;
+      setTimeout(() => showHead(true), Math.max(0, MENU_AT - (performance.now() - t0)));
       const s = performance.now();
       const step = (now) => { const p = Math.min(1, (now - s) / T.rise); setRise(ease(p)); if (p < 1) raf = requestAnimationFrame(step); else settle(); };
       raf = requestAnimationFrame(step);
