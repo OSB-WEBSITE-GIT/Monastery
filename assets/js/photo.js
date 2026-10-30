@@ -33,6 +33,7 @@
   function slotFor(table, row, field, db) {
     row = row || {};
     if (table === "sections" && row.kind === "intro") return "intro";
+    if (table === "sections" && row.kind === "news") return "card";
     if (table === "sections") return row.kind === "hero" ? "hero" : (row.settings || {}).photo_position === "beside" ? "sectionSide" : "section";
     if (table === "section_items") {
       const sec = ((db && db.sections) || []).find((s) => s.id === row.section_id) || {};

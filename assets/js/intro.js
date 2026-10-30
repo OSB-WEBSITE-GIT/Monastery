@@ -101,24 +101,28 @@
     const end = () => { state.finished = true; el.home.classList.remove("on"); };
     function settle() {
       el.statue.classList.remove("rising"); el.statue.classList.add("gilded"); el.intro.classList.add("golden");
-      showHead(true); setTimeout(end, 600);
+      setTimeout(end, 600);
     }
+    // Order: the header and menu fade in, then the light comes down from the menu, then the statue turns gold.
+    const LIGHT_AFTER = 700, GOLD_AFTER = 1300;   // milliseconds after the menu starts to appear
     function rise() {
       if (state.finished || state.rising) return; state.rising = true;
-      el.statue.style.setProperty("--sil", `url("${el.gold.currentSrc || el.gold.src}")`);
-      el.statue.classList.add("rising");
-      setTimeout(() => el.intro.classList.add("golden"), T.rise * .5);
-      // the header and menu start to fade in 3.0 seconds after the page opens (MENU_AT, in milliseconds)
-      const MENU_AT = 3000;
-      setTimeout(() => showHead(true), Math.max(0, MENU_AT - (performance.now() - t0)));
-      const s = performance.now();
-      const step = (now) => { const p = Math.min(1, (now - s) / T.rise); setRise(ease(p)); if (p < 1) raf = requestAnimationFrame(step); else settle(); };
-      raf = requestAnimationFrame(step);
+      showHead(true);
+      setTimeout(() => { if (!state.finished) el.intro.classList.add("lit"); }, LIGHT_AFTER);
+      setTimeout(() => {
+        if (state.finished) return;
+        el.statue.style.setProperty("--sil", `url("${el.gold.currentSrc || el.gold.src}")`);
+        el.statue.classList.add("rising");
+        setTimeout(() => el.intro.classList.add("golden"), T.rise * .5);
+        const s = performance.now();
+        const step = (now) => { const p = Math.min(1, (now - s) / T.rise); setRise(ease(p)); if (p < 1) raf = requestAnimationFrame(step); else settle(); };
+        raf = requestAnimationFrame(step);
+      }, GOLD_AFTER);
     }
     function finishNow() {
       if (state.finished) return; cancelAnimationFrame(raf);
       el.statue.classList.add("drawn", "gilded"); setRise(1);
-      el.intro.classList.add("golden"); showHead(true); end();
+      el.intro.classList.add("lit", "golden"); showHead(true); end();
     }
     state.finishNow = finishNow;
     showHead(false);

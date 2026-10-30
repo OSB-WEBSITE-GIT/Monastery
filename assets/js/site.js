@@ -149,7 +149,7 @@
       ? (its.length || S.inlineText ? `<ul class="list">${its.map((it) => `<li ${rowAttr("section_items", it)}>${T("span", "section_items", it.id, "title", it.title, "t")}${T("span", "section_items", it.id, "body", it.body, "d")}</li>`).join("")}</ul>` : "")
       : above ? "" : (s.image_url || S.editing ? `<figure>${PH("sectionSide", "sections", s.id, "image_url", s.image_url, tr(s.image_caption).v)}${T("figcaption", "sections", s.id, "image_caption", s.image_caption)}</figure>` : "");
     // With a photo above the text, the heading sits on the photo (top left) in a box of the menu colour; the small label stays above.
-    const onPhoto = above && !!s.image_url && !!tr(s.title).v;
+    const onPhoto = above && !!s.image_url && !!tr(s.title).v && st.title_on_photo !== false;
     const banner = above && (s.image_url || S.editing) ? `<figure class="story-banner"><div class="banner-frame">${PH("section", "sections", s.id, "image_url", s.image_url, tr(s.image_caption).v)}${onPhoto ? T("h2", "sections", s.id, "title", s.title, "banner-title") : ""}</div>${T("figcaption", "sections", s.id, "image_caption", s.image_caption)}</figure>` : "";
     const timeline = !listMode && its.length ? `<ol class="timeline">${its.map((it) => `<li ${rowAttr("section_items", it)}>${T("span", "section_items", it.id, "label", it.label, "mark")}${T("span", "section_items", it.id, "title", it.title, "t")}</li>`).join("")}</ol>` : "";
     return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">
@@ -173,7 +173,7 @@
     return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${its.length ? head(s) : headNoBody(s)}
       ${its.length ? "" : `<div class="note">${T("div", "sections", s.id, "body", s.body, "", "rich") || esc(L("empty_cards"))}</div>`}
       ${feature ? `<div class="card-feature">${card(its[0], "featured")}</div>` : ""}
-      ${list.length ? `<div class="cards ${st.photo === "portrait" ? "portrait" : ""} ${feature ? "under-feature" : ""}">${list.map((it) => { under = feature; const h = card(it); under = false; return h; }).join("")}</div>` : ""}
+      ${list.length ? `<div class="cards ${st.photo === "portrait" ? "portrait" : ""} ${feature ? "under-feature" : ""}" data-more="${st.limit || 8}">${list.map((it) => { under = feature; const h = card(it); under = false; return h; }).join("")}</div>` : ""}
       ${cta(s)}</div></section>`;
   };
   R.contact = (s) => `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${headNoBody(s)}
@@ -222,15 +222,20 @@
   OSB.occurrence = occurrence;
   R.events = (s) => {
     const today = nowParts().date; const lim = (s.settings || {}).limit || 6;
-    const list = S.db.events.map((e) => occurrence(e, today)).filter(Boolean).sort((a, b) => (a.starts_on > b.starts_on ? 1 : -1)).slice(0, lim);
+    const list = S.db.events.map((e) => occurrence(e, today)).filter(Boolean).sort((a, b) => (a.starts_on > b.starts_on ? 1 : -1));
+    // past one-off events (yearly feasts simply move on to next year)
+    const past = S.db.events.filter((e) => !e.repeats_yearly && (e.ends_on || e.starts_on) < today).sort((a, b) => (a.starts_on < b.starts_on ? 1 : -1));
     const loc = S.lang === "ml" ? "ml-IN" : "en-IN";
-    const body = list.length ? `<div class="events">${list.map((e) => {
+    const evt = (e) => {
       const d = new Date(e.starts_on + "T00:00:00");
       return `<article class="event" ${rowAttr("events", e)}>
         <div class="date"><span class="m">${esc(d.toLocaleDateString(loc, { month: "short" }))}</span><span class="d">${d.getDate()}</span><span class="y">${d.getFullYear()}</span></div>
         <div class="body"><span class="cat">${esc(L(e.category) || e.category)}${e.time_label ? " · " + esc(e.time_label) : ""}</span>
           ${T("h3", "events", e.id, "title", e.title, "t")}${T("p", "events", e.id, "description", e.description, "d2")}${T("p", "events", e.id, "location", e.location, "d2")}</div></article>`;
-    }).join("")}</div>` : `<p class="muted">${esc(L("no_events"))}</p>`;
+    };
+    const body = (list.length ? `<div class="events" data-more="${lim}">${list.map(evt).join("")}</div>` : `<p class="muted">${esc(L("no_events"))}</p>`)
+      + (past.length ? `<div class="past-wrap"><button type="button" class="view-more" data-toggle-past>${S.lang === "ml" ? "കഴിഞ്ഞ പരിപാടികൾ" : "Past events"} (${past.length})</button>
+          <div class="events past" hidden data-more="${lim}">${past.map(evt).join("")}</div></div>` : "");
     return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}" data-managed="events"><div class="wrap">${head(s)}${body}</div></section>`;
   };
 
@@ -238,22 +243,68 @@
   const fmtDate = (d) => new Date(d + "T00:00:00").toLocaleDateString(S.lang === "ml" ? "ml-IN" : "en-IN", { day: "numeric", month: "long", year: "numeric" });
   R.news = (s) => {
     const lim = (s.settings || {}).limit || 3;
-    const posts = [...S.db.posts].sort((a, b) => (b.pinned - a.pinned) || (a.published_on < b.published_on ? 1 : -1)).slice(0, lim);
-    const card = (p, lead) => `<article class="post ${lead ? "lead" : ""}" ${rowAttr("posts", p)} data-open-post="${p.id}" tabindex="0" role="button">
-      ${p.cover_url ? Photo().frame("news", p.cover_url) : ""}
-      <span class="when">${esc(fmtDate(p.published_on))}</span>
+    const posts = [...S.db.posts].sort((a, b) => (b.pinned - a.pinned) || (a.published_on < b.published_on ? 1 : -1));
+    const mm = S.db.sections.find((x) => x.slug === "mariamala") || {};
+    const thumb = s.image_url || mm.image_url;   // the section's photo; otherwise the Mariamala photo
+    const row = (p) => `<article class="news-row ${p.cover_url ? "" : "no-pic"}" ${rowAttr("posts", p)} data-open-post="${p.id}" tabindex="0" role="button">
+      ${p.cover_url ? Photo().frame("card", p.cover_url) : ""}
+      <div class="nr-text"><span class="when">${esc(fmtDate(p.published_on))}</span>
       ${T("h3", "posts", p.id, "title", p.title, "t")}${T("p", "posts", p.id, "excerpt", p.excerpt, "x")}
-      <span class="more">${esc(L("read_more"))} →</span></article>`;
-    const body = posts.length ? `<div class="news">${card(posts[0], true)}<div class="news-side">${posts.slice(1).map((p) => card(p)).join("")}</div></div>` : `<p class="muted">${esc(L("no_posts"))}</p>`;
-    return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}" data-managed="posts"><div class="wrap">${head(s)}${body}</div></section>`;
+      <span class="more">${esc(L("read_more"))} →</span></div></article>`;
+    return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}" data-managed="posts"><div class="wrap">
+      <div class="news-head">${thumb ? `<div class="news-thumb">${PH("card", "sections", s.id, "image_url", thumb, tr(s.title).v)}</div>` : ""}${head(s)}</div>
+      ${posts.length ? `<div class="news-list" data-more="${lim}">${posts.map(row).join("")}</div>` : `<p class="muted">${esc(L("no_posts"))}</p>`}</div></section>`;
   };
+
+  /* new members: a two-column list, photo | name, event and date, house; newest first */
+  R.members = (s) => {
+    const its = items(s).sort((a, b) => ((b.extra || {}).date || "").localeCompare((a.extra || {}).date || ""));
+    return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${head(s)}
+      ${its.length ? `<div class="members" data-more="${(s.settings || {}).limit || 6}">${its.map((it) => { const x = it.extra || {}; return `<div class="member" ${rowAttr("section_items", it)}>
+        ${PH("portrait", "section_items", it.id, "image_url", it.image_url, tr(it.title).v)}
+        <div class="mb-text">${T("span", "section_items", it.id, "title", it.title, "t")}
+          <span class="mb-ev">${esc(tr(it.label).v)}${x.date ? `${tr(it.label).v ? " · " : ""}${esc(fmtDate(x.date))}` : ""}</span>
+          ${x.house ? `<span class="mb-house">${esc(x.house)}</span>` : ""}</div></div>`; }).join("")}</div>` : `<p class="muted">${S.lang === "ml" ? "ഉടൻ ചേർക്കും." : "Coming soon."}</p>`}</div></section>`;
+  };
+
+  /* creative corner: writing, art and films (video links only); filter tabs; open to read or view */
+  const plain = (h) => String(h || "").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+  const ytId = (u) => ((u || "").match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/) || [])[1];
+  const CTYPES = [["all", "All", "എല്ലാം"], ["writing", "Writing", "രചനകൾ"], ["art", "Art", "ചിത്രങ്ങൾ"], ["film", "Films", "ചിത്രങ്ങൾ (വീഡിയോ)"]];
+  R.creative = (s) => {
+    const its = items(s);
+    const typeOf = (it) => ((it.extra || {}).type || (it.link ? "film" : it.image_url ? "art" : "writing"));
+    const present = new Set(its.map(typeOf));
+    const tabs = CTYPES.filter(([k]) => k === "all" || present.has(k));
+    const card = (it) => { const t = typeOf(it), x = it.extra || {}, id = ytId(it.link);
+      const pic = t === "film" ? (id ? `<div class="ph cr-film" data-slot="card"><img src="https://i.ytimg.com/vi/${esc(id)}/hqdefault.jpg" alt="" loading="lazy"><span aria-hidden="true">▶</span></div>` : "")
+        : it.image_url ? PH("card", "section_items", it.id, "image_url", it.image_url, tr(it.title).v) : "";
+      const ex = t === "writing" ? plain(tr(it.body).v).slice(0, 170) : "";
+      return `<article class="cr-card" data-type="${t}" ${rowAttr("section_items", it)} data-open-creative="${it.id}" tabindex="0" role="button">${pic}
+        <span class="label">${esc(tr(it.label).v || (CTYPES.find((c) => c[0] === t) || [])[1] || "")}</span>
+        ${T("h3", "section_items", it.id, "title", it.title, "t")}${x.author ? `<span class="cr-by">${esc(x.author)}</span>` : ""}
+        ${ex ? `<p class="x">${esc(ex)}${plain(tr(it.body).v).length > 170 ? "…" : ""}</p>` : ""}</article>`; };
+    return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${head(s)}
+      ${its.length ? `${tabs.length > 2 ? `<div class="cr-tabs" role="group" aria-label="Show">${tabs.map(([k, en, ml]) => `<button type="button" data-cr-tab="${k}" aria-pressed="${k === "all"}">${S.lang === "ml" ? ml : en}</button>`).join("")}</div>` : ""}
+        <div class="cr-grid" data-more="${(s.settings || {}).limit || 6}">${its.map(card).join("")}</div>` : `<p class="muted">${S.lang === "ml" ? "ഉടൻ ചേർക്കും." : "Coming soon."}</p>`}</div></section>`;
+  };
+  function openCreative(id) {
+    const it = S.db.section_items.find((x) => x.id === id); if (!it) return;
+    const x = it.extra || {}, yid = ytId(it.link), t = x.type || (it.link ? "film" : it.image_url ? "art" : "writing");
+    if (t === "film" && it.link && !yid) { window.open(it.link, "_blank", "noopener"); return; }
+    overlay(`<article class="reader" role="dialog" aria-modal="true" aria-label="${esc(tr(it.title).v)}"><button type="button" class="x-btn" data-close>${esc(L("close"))} ✕</button>
+      ${t === "film" && yid ? `<div class="cr-video"><iframe src="https://www.youtube-nocookie.com/embed/${esc(yid)}" title="${esc(tr(it.title).v)}" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`
+        : it.image_url ? Photo().frame("full", it.image_url, { eager: true }) : ""}
+      <span class="label">${esc(tr(it.label).v)}</span><h2>${esc(tr(it.title).v)}</h2>${x.author ? `<p class="cr-by">${esc(x.author)}</p>` : ""}
+      <div class="rich">${clean(tr(it.body).v)}</div></article>`);
+  }
 
   /* gallery */
   const mediaOf = (a) => S.db.media_items.filter((m) => m.album_id === a.id).sort((x, y) => x.sort - y.sort);
   R.gallery = (s) => {
     const albums = [...S.db.albums].sort((a, b) => a.sort - b.sort);
     return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}" data-managed="albums"><div class="wrap">${head(s)}
-      <div class="albums">${albums.map((a) => {
+      <div class="albums" data-more="8">${albums.map((a) => {
         const m = mediaOf(a); const cover = a.cover_url || (m.find((x) => x.kind === "image") || {}).url;
         return `<article class="album" ${rowAttr("albums", a)} data-open-album="${a.id}" tabindex="0" role="button">
           <div class="cover">${cover ? Photo().frame("cover", cover) : esc(L("empty_album"))}</div>
@@ -343,6 +394,7 @@
     // the band colour on every second section, starting with the first one (Leadership)
     const bands = th.bands !== false; let n = 0;
     document.querySelectorAll("#main > section.block").forEach((el) => { if (el.dataset.hidden === "1" && !S.editing) return; el.classList.toggle("band", bands && n++ % 2 === 0); });
+    moreButtons();
     updateNow();
     if (OSB.Intro && OSB.Intro.isMounted()) OSB.Intro.sync({ db: S.db, lang: S.lang, user: S.user, setting });
     if (OSB.afterRender) OSB.afterRender();
@@ -391,11 +443,26 @@
     show();
   }
 
+  /* "View more": a list marked data-more="N" shows its first N items, the rest behind a button (editors see everything) */
+  function moreButtons() {
+    document.querySelectorAll("#main [data-more]").forEach((list) => {
+      const n = +list.dataset.more || 6, kids = [...list.children];
+      if (S.editing || kids.length <= n) return;
+      kids.slice(n).forEach((k) => k.classList.add("is-more"));
+      const b = document.createElement("button"); b.type = "button"; b.className = "view-more"; b.dataset.viewMore = "";
+      b.textContent = `${S.lang === "ml" ? "കൂടുതൽ കാണുക" : "View more"} (${kids.length - n})`;
+      list.after(b);
+    });
+  }
   function wire() {
     document.addEventListener("click", (e) => {
       const lb = e.target.closest("[data-lang]"); if (lb) { S.lang = lb.dataset.lang; store("osb-lang", S.lang); OSB.render(); return; }
       const pb = e.target.closest("[data-palette]"); if (pb && pb.tagName === "BUTTON") { S.palette = pb.dataset.palette; store("osb-palette", S.palette); OSB.render(); return; }
+      const vm = e.target.closest("[data-view-more]"); if (vm) { const l = vm.previousElementSibling; l && l.querySelectorAll(".is-more").forEach((k) => k.classList.remove("is-more")); vm.remove(); return; }
+      const tp = e.target.closest("[data-toggle-past]"); if (tp) { const l = tp.nextElementSibling; l.hidden = !l.hidden; tp.setAttribute("aria-expanded", String(!l.hidden)); return; }
+      const ct = e.target.closest("[data-cr-tab]"); if (ct) { const sec = ct.closest("section"); sec.querySelectorAll("[data-cr-tab]").forEach((b) => b.setAttribute("aria-pressed", String(b === ct))); const g = sec.querySelector(".cr-grid"); g.dataset.filter = ct.dataset.crTab; return; }
       if (S.editing) return;
+      const cr = e.target.closest("[data-open-creative]"); if (cr) { openCreative(cr.dataset.openCreative); return; }
       const sm = e.target.closest("[data-submenu]");
       if (sm) { const row = $("#sub-row"); const m = S.db.menu_items.find((x) => x.id === sm.dataset.submenu);
         const open = !row.hidden && row.dataset.for === m.id; row.hidden = open; row.dataset.for = m.id;
@@ -405,7 +472,7 @@
     });
     document.addEventListener("keydown", (e) => {
       if ((e.key === "Enter" || e.key === " ") && !S.editing) {
-        const t = e.target.closest && e.target.closest("[data-open-post],[data-open-album]");
+        const t = e.target.closest && e.target.closest("[data-open-post],[data-open-album],[data-open-creative]");
         if (t) { e.preventDefault(); t.click(); }
       }
     });

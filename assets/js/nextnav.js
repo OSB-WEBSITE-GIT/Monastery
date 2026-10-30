@@ -22,8 +22,9 @@
 .nx .nx-n{overflow:hidden;text-overflow:ellipsis;max-width:22ch}
 body.cms-editing .nx,body:has(#cms-bar) .nx{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .nx .nx-a{font-size:1.1em;line-height:1}
+@media (min-width:681px){.nx .nx-k,.nx .nx-a{display:none}}
 /* phones: about half the size, "NEXT ↓" / "TOP ↑" only */
-@media (max-width:680px){.nx{font-size:.62rem;gap:.35rem;padding:.42rem calc(.65rem + env(safe-area-inset-right,0px)) .42rem .8rem}.nx .nx-n,.nx .nx-c{display:none}.nx .nx-k{opacity:1}}
+@media (max-width:680px){.nx{font-size:.62rem;gap:.35rem;padding:.42rem calc(.65rem + env(safe-area-inset-right,0px)) .42rem .8rem}.nx .nx-n{display:none}.nx .nx-k{opacity:1}}
 @media (max-width:1023.98px){body:has(#cms-bar) .nx{bottom:calc(22px + env(safe-area-inset-bottom,0px))}}
 @media (prefers-reduced-motion:reduce){.nx{transition:none}}`;
     document.head.appendChild(st);
@@ -53,12 +54,15 @@ body.cms-editing .nx,body:has(#cms-bar) .nx{bottom:calc(84px + env(safe-area-ins
     if (!app || app.hidden || !(OSB.state && OSB.state.db)) { btn.classList.remove("on"); return; }   // still loading
     const intro = document.getElementById("intro");
     if (intro && intro.getBoundingClientRect().bottom > innerHeight * .5) { btn.classList.remove("on"); return; }  // the opening scene has its own Home button
+    const foot = document.getElementById("footer");
+    if (foot && foot.getBoundingClientRect().top < innerHeight - 40) { btn.classList.remove("on"); return; }   // keep "Sign in" and the footer clear
     const line = innerHeight * .35, list = stops();
     const next = list.find((s) => s.el.getBoundingClientRect().top > line + 4);
     target = next ? next.el : null;
     // laptops: "NEXT: OUR HOUSES ↓"; phones: just "NEXT ↓" (the name is hidden by the style sheet)
-    btn.innerHTML = next ? `<span class="nx-k">Next<span class="nx-c">:</span></span><span class="nx-n">${next.name.replace(/[&<>"]/g, "")}</span><span class="nx-a" aria-hidden="true">↓</span>`
-      : `<span class="nx-n nx-top-l">Back to</span><span class="nx-k">top</span><span class="nx-a" aria-hidden="true">↑</span>`;
+    // laptops: just the section name ("OUR HOUSES"); phones: "NEXT ↓" (the style sheet shows the right parts)
+    btn.innerHTML = next ? `<span class="nx-k">Next</span><span class="nx-n">${next.name.replace(/[&<>"]/g, "")}</span><span class="nx-a" aria-hidden="true">↓</span>`
+      : `<span class="nx-n">Back to top</span><span class="nx-k">Top</span><span class="nx-a" aria-hidden="true">↑</span>`;
     btn.setAttribute("aria-label", next ? "Next section: " + next.name : "Back to top");
     btn.style.left = ""; btn.classList.add("on"); place();
   }
