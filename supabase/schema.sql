@@ -108,7 +108,7 @@ create table if not exists public.sections (
   id            uuid primary key default gen_random_uuid(),
   slug          text not null unique,            -- used for #anchors
   kind          text not null check (kind in
-                ('hero','intro','tiles','story','stats','steps','horarium','events',
+                ('hero','intro','tiles','story','stats','steps','horarium','events','members','creative',
                  'news','gallery','cards','contact','text')),
   eyebrow       jsonb not null default '{}'::jsonb,
   title         jsonb not null default '{}'::jsonb,
@@ -236,7 +236,7 @@ do $$
 begin
   alter table public.sections drop constraint if exists sections_kind_check;
   alter table public.sections add constraint sections_kind_check check (kind in
-    ('hero','intro','tiles','story','stats','steps','horarium','events','news','gallery','cards','contact','text'));
+    ('hero','intro','tiles','story','stats','steps','horarium','events','members','creative','news','gallery','cards','contact','text','members','creative'));
 end $$;
 
 -- Welcome verses: one is shown at random on the welcome screen (a visitor's first visit each day)
@@ -316,6 +316,30 @@ begin
     execute format('create policy %I_edit on public.%I for all using (public.is_editor()) with check (public.is_editor())', t, t);
   end loop;
 end $$;
+
+-- Page structure lock: sections can be edited but not added, deleted or retyped from the website
+drop policy if exists sections_edit   on public.sections;
+drop policy if exists sections_update on public.sections;
+create policy sections_update on public.sections for update using (public.is_editor()) with check (public.is_editor());
+-- no insert or delete policy: adding and deleting sections is refused from the website
+
+create or replace function public.protect_sections()
+returns trigger language plpgsql as $$
+begin
+  if auth.uid() is null then return new; end if;   -- SQL Editor / maintenance scripts
+  if new.kind is distinct from old.kind or new.slug is distinct from old.slug then
+    raise exception 'The type and link name of a section are fixed.';
+  end if;
+  if new.sort is distinct from old.sort then
+    if not public.is_admin() then raise exception 'Only an admin can change the order of the sections.'; end if;
+    if old.kind = 'intro' or new.sort <= coalesce((select min(sort) from public.sections where kind = 'intro' and id <> new.id), new.sort - 1) then
+      raise exception 'The opening scene stays at the top of the page.';
+    end if;
+  end if;
+  return new;
+end $$;
+drop trigger if exists sections_protect on public.sections;
+create trigger sections_protect before update on public.sections for each row execute function public.protect_sections();
 
 -- section items are public only when both the item and its section are visible
 drop policy if exists section_items_read on public.section_items;
