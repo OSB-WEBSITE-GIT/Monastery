@@ -515,6 +515,11 @@
     // New members / Creative corner: the section itself has only a heading and a short introduction; each person or work is an item
     if (table === "sections" && ["members", "creative"].includes(r.kind)) fields = fields.filter(([k]) => ["slug", "kind", "eyebrow", "title", "body", "settings", "visible"].includes(k))
       .map((f) => (f[0] === "body" ? ["body", "rich", "Short introduction (optional). Add each " + (r.kind === "members" ? "person" : "work") + " below, under “Items in this section”."] : f));
+    // show only the fields this type of section really displays on the page (a photo or button the page never shows only confuses)
+    if (table === "sections" && r.kind !== "intro") {
+      const usesPhoto = ["hero", "story"].includes(r.kind), usesButton = ["hero", "text", "story", "steps", "cards"].includes(r.kind);
+      fields = fields.filter(([k]) => (usesPhoto || !["image_url", "image_caption"].includes(k)) && (usesButton || !["cta_label", "cta_link"].includes(k)));
+    }
     if (table === "sections" && r.kind === "intro") fields = [
       ["title", "i18n", "Name (read by screen readers)"],
       ["settings.start_url", "image", "Starting picture (silver)", { help: "Leave empty to use the built-in statue. Use a PNG with a transparent background, or a picture on a plain white background. Both pictures should be the same size, with the statue in the same place." }],
