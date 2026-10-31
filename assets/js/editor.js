@@ -357,7 +357,7 @@
     return rows.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
   }
   const TAB_HELP = {
-    sections: "Every part of the home page. Drag order with the arrows; open one to change its text, photo and layout, and to add or remove its items.",
+    sections: "Every part of the home page. Open one to change its text, photo and layout, and to add or remove its items. Sections cannot be added or deleted here; use Hide to take one off the page. Admins can change the order with the arrows.",
     menu_items: "The links in the main menu. A link can point to a section (#heritage) or to another website.",
     horarium: "The daily timetable. Times are monastery time (India). The entry happening now is highlighted on the site.",
     events: "Feasts and events. Only today's and future dates appear on the site.",
@@ -367,21 +367,23 @@
   };
   function listView(p, table, opts = {}) {
     const rows = opts.rows || rowsFor(table);
-    const sortable = ["sections", "menu_items", "horarium", "albums", "section_items", "media_items", "verses"].includes(table);
+    const locked = table === "sections";   // the page structure is fixed: sections cannot be added or deleted here
+    const sortable = ["sections", "menu_items", "horarium", "albums", "section_items", "media_items", "verses"].includes(table) && (table !== "sections" || isAdmin());
     const label = (TABS.find((t) => t[0] === table) || [, opts.title || ""])[1];
     const html = `${opts.embedded ? `<div class="cms-sub-head"><h3>${esc(opts.title)}</h3><button type="button" class="cms-btn primary" data-add>+ Add</button></div>` :
-      `<header class="cms-panel-head"><div><h2>${esc(label)}</h2><p>${esc(TAB_HELP[table] || "")}</p></div><button type="button" class="cms-btn primary" data-add>+ Add</button></header>`}
+      `<header class="cms-panel-head"><div><h2>${esc(label)}</h2><p>${esc(TAB_HELP[table] || "")}</p></div>${locked ? "" : `<button type="button" class="cms-btn primary" data-add>+ Add</button>`}</header>`}
       ${rows.length ? `<ul class="cms-list">${rows.map((r, i) => {
         const flag = "visible" in r ? r.visible : "published" in r ? r.published : true;
         const sib = sortable ? siblings(table, r) : []; const si = sib.indexOf(r);
+        const fixedFirst = locked && (r.kind === "intro" || (sib[si - 1] || {}).kind === "intro");   // nothing moves above the opening scene
         return `<li class="${flag === false ? "off" : ""} ${table === "menu_items" && r.parent_id ? "child" : ""}">
           <button type="button" class="cms-row-main" data-open="${r.id}"><strong>${esc(rowTitle(table, r))}</strong><span>${esc(rowMeta(table, r))}</span></button>
           ${flag === false ? `<span class="cms-chip">${"published" in r ? "Draft" : "Hidden"}</span>` : ""}${missingML(r) ? `<span class="cms-chip warn" title="Malayalam text missing">ML missing</span>` : ""}
-          <span class="cms-row-acts">${sortable ? `<button type="button" data-mv="-1" data-i="${r.id}" ${si <= 0 ? "disabled" : ""} aria-label="Move up">↑</button><button type="button" data-mv="1" data-i="${r.id}" ${si >= sib.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>` : ""}
-          <button type="button" data-open="${r.id}">Edit</button><button type="button" class="danger" data-del="${r.id}" aria-label="Delete">✕</button></span></li>`;
+          <span class="cms-row-acts">${sortable ? `<button type="button" data-mv="-1" data-i="${r.id}" ${si <= 0 || fixedFirst ? "disabled" : ""} aria-label="Move up">↑</button><button type="button" data-mv="1" data-i="${r.id}" ${si >= sib.length - 1 || (locked && r.kind === "intro") ? "disabled" : ""} aria-label="Move down">↓</button>` : ""}
+          <button type="button" data-open="${r.id}">Edit</button>${locked ? "" : `<button type="button" class="danger" data-del="${r.id}" aria-label="Delete">✕</button>`}</span></li>`;
       }).join("")}</ul>` : `<p class="cms-empty">Nothing here yet. Use “+ Add” to create the first one.</p>`}`;
     const host = opts.host || p; host.innerHTML = html;
-    host.querySelector("[data-add]").onclick = async () => {
+    const addBtn = host.querySelector("[data-add]"); if (addBtn) addBtn.onclick = async () => {
       if (opts.onAdd) return opts.onAdd();
       if (table === "sections") return addSectionDialog();
       const row = await run(() => OSB.store.insert(table, DEF[table]()), "Added"); if (!row) return;
@@ -510,6 +512,9 @@
         creative: { label: "Kind (e.g. Poem, Article, Drama, Painting, Short film)", body: "Text (for writing)", image_url: "Picture (for paintings and drawings)", link: "Video link (YouTube) for films" } }[sec.kind];
       if (RENAME) fields = fields.map((f) => (RENAME[f[0]] ? [f[0], f[1], RENAME[f[0]], f[3]] : f));
     }
+    // New members / Creative corner: the section itself has only a heading and a short introduction; each person or work is an item
+    if (table === "sections" && ["members", "creative"].includes(r.kind)) fields = fields.filter(([k]) => ["slug", "kind", "eyebrow", "title", "body", "settings", "visible"].includes(k))
+      .map((f) => (f[0] === "body" ? ["body", "rich", "Short introduction (optional). Add each " + (r.kind === "members" ? "person" : "work") + " below, under “Items in this section”."] : f));
     if (table === "sections" && r.kind === "intro") fields = [
       ["title", "i18n", "Name (read by screen readers)"],
       ["settings.start_url", "image", "Starting picture (silver)", { help: "Leave empty to use the built-in statue. Use a PNG with a transparent background, or a picture on a plain white background. Both pictures should be the same size, with the statue in the same place." }],
@@ -521,8 +526,11 @@
       <form class="cms-form" id="cms-f" novalidate>${fields.map((f) => fieldHtml(table, r, f)).join("")}
       <p class="cms-err" id="cms-f-err" hidden></p>
       <div class="cms-actions sticky"><button class="cms-btn primary" type="submit">Save</button><button type="button" class="cms-btn" data-back>Cancel</button>
-      ${!isNew ? `<button type="button" class="cms-btn danger" data-delete>Delete</button>` : ""}</div></form><div id="cms-children"></div>`;
+      ${!isNew && table !== "sections" ? `<button type="button" class="cms-btn danger" data-delete>Delete</button>` : ""}</div></form><div id="cms-children"></div>`;
     const form = $("#cms-f", p); wireFormControls(form);
+    if (table === "sections") ["slug", "kind"].forEach((k) => { const f = form.querySelector(`[data-key="${k}"]`); if (!f) return;   // fixed: the menu and the layout depend on them
+      f.querySelectorAll("input,select").forEach((i) => (i.disabled = true));
+      f.insertAdjacentHTML("beforeend", `<small>Fixed, to keep the page structure intact.</small>`); });
     if (table === "sections" && r.kind === "intro") introPairCheck(form);
     const hb = $("[data-history]", p); if (hb) hb.onclick = () => OSB.HistoryUI.openRow(table, id, { onRestored: async () => { await OSB.reload(); refreshDash(); } });
     const goBack = () => { if (ctx.parentTable) D = { tab: ctx.parentTable, id: ctx.parentId }; else D = { tab: D.tab }; refreshDash(); };
