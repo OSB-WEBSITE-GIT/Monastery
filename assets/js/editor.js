@@ -236,7 +236,7 @@
     const sl = $("#signin-link"); if (sl) sl.onclick = signInDialog;
     if (S.editing && role()) { pageImageTools(); sectionButtons(); }
   };
-  document.addEventListener("click", (e) => { if (S.editing && e.target.closest("a") && !e.target.closest(".cms-edit-sec,#cms-bar,.cms-modal,#cms-dash-wrap")) e.preventDefault(); }, true);
+  document.addEventListener("click", (e) => { const a = e.target.closest("a"); if (S.editing && a && !(a.getAttribute("href") || "").startsWith("#") && !e.target.closest(".cms-edit-sec,#cms-bar,.cms-modal,#cms-dash-wrap")) e.preventDefault(); }, true);   // while editing, links that leave the page are paused; the menu and other links within the page still work
 
   /* ================= DASHBOARD ================= */
   const CATS = ["feast", "event", "retreat", "ordination", "jubilee"];
