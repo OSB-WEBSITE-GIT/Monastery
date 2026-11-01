@@ -345,3 +345,13 @@ footer.site .motto{font-family:var(--f-label);letter-spacing:.2em;font-size:.75r
 
 /* nothing may make the page scroll sideways on phones */
 html,body{overflow-x:clip}
+/* phones: the line under the name runs under the name AND the theme / language buttons, so it takes two lines instead of five */
+@media (max-width:600px){
+  header.site .wrap{display:grid;grid-template-columns:auto 1fr auto auto;grid-template-areas:"em name mode lang" "em sub sub sub";column-gap:.7rem;row-gap:.35rem;align-items:start;padding-block:.8rem .7rem}
+  header.site .emblem{grid-area:em;width:56px;align-self:center}
+  .wordmark{display:contents}
+  .wordmark .name{grid-area:name;align-self:center;font-size:1.45rem}
+  .wordmark .sub{grid-area:sub;font-size:.6rem;letter-spacing:.12em;line-height:1.5}
+  header.site .mode-toggle{grid-area:mode;margin:0}
+  header.site .lang{grid-area:lang;margin:0}
+}
