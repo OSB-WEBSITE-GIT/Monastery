@@ -342,3 +342,6 @@ footer.site .motto{font-family:var(--f-label);letter-spacing:.2em;font-size:.75r
 .lightbox .bar{display:flex;justify-content:space-between;align-items:center;gap:1rem;font-family:var(--f-ui);font-size:.9rem}
 .lightbox button{font:inherit;background:rgba(255,255,255,.08);color:#f4efe6;border:1px solid rgba(255,255,255,.3);padding:.4rem .9rem;cursor:pointer}
 .lightbox .nav{display:flex;gap:.5rem}
+
+/* nothing may make the page scroll sideways on phones */
+html,body{overflow-x:clip}
