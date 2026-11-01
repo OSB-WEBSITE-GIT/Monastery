@@ -85,3 +85,5 @@ body.ix-wait #masthead,body.ix-wait #nav{opacity:0;pointer-events:none;transitio
   #intro *,#intro,#intro *::before,#intro *::after,.ix-bar,.ix-home{animation:none!important;transition:none!important}
   #intro .ix-verse,#intro .ix-ref,#intro .ix-bible{opacity:1}
 }
+/* Home button switched off (November 2026); delete this line to bring it back */
+.ix-home{display:none!important}
