@@ -14,7 +14,7 @@
   padding:.72rem calc(1.1rem + env(safe-area-inset-right,0px)) .72rem 1.4rem;border:0;border-radius:999px 0 0 999px;
   background:var(--hl,#e9c46a);color:var(--hl-ink,#2a1f10);box-shadow:0 6px 22px rgba(0,0,0,.22);cursor:pointer;
   font-family:var(--f-label,Georgia,serif);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;
-  opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .4s ease,transform .4s ease}
+  opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .4s ease,transform .4s ease}
 .nx.on{opacity:1;transform:none;pointer-events:auto}
 .nx:hover{filter:brightness(1.05)}
 .nx:focus-visible{outline:2px solid var(--hl-ink,#2a1f10);outline-offset:-5px}
@@ -24,7 +24,7 @@ body.cms-editing .nx,body:has(#cms-bar) .nx{bottom:calc(84px + env(safe-area-ins
 .nx .nx-a{font-size:1.1em;line-height:1}
 @media (min-width:681px){.nx .nx-k,.nx .nx-a{display:none}}
 /* phones: about half the size, "NEXT ↓" / "TOP ↑" only */
-@media (max-width:680px){.nx{font-size:.62rem;gap:.35rem;padding:.42rem calc(.65rem + env(safe-area-inset-right,0px)) .42rem .8rem}.nx .nx-n{display:none}.nx .nx-k{opacity:1}}
+@media (max-width:680px){.nx{right:calc(10px + env(safe-area-inset-right,0px));left:auto!important;max-width:calc(100vw - 20px);font-size:.56rem;letter-spacing:.1em;gap:.3rem;padding:.38rem .7rem;border-radius:999px}.nx .nx-n{display:none}.nx .nx-k{opacity:1}}
 @media (max-width:1023.98px){body:has(#cms-bar) .nx{bottom:calc(22px + env(safe-area-inset-bottom,0px))}}
 @media (prefers-reduced-motion:reduce){.nx{transition:none}}`;
     document.head.appendChild(st);
