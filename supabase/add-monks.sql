@@ -25,7 +25,7 @@ begin
   if not exists (select 1 from public.section_items where section_id = sec) then
     insert into public.section_items (section_id, label, title, extra, sort, visible) values
       (sec, '{"en": "", "ml": ""}'::jsonb, '{"en": "Fr. Michael Kannala", "ml": ""}'::jsonb, '{"profession": "1994-12-14", "ordination": "1998-12-28"}'::jsonb, 10, true),
-      (sec, '{"en": "", "ml": ""}'::jsonb, '{"en": "Fr. Shaji Padinjarakunnel", "ml": ""}'::jsonb, '{"profession": "1995-12-06", "ordination": "1999-12-27", "late": true}'::jsonb, 20, true),
+      (sec, '{"en": "", "ml": ""}'::jsonb, '{"en": "Fr. Shaji Padinjarakunnel (Late)", "ml": ""}'::jsonb, '{"profession": "1995-12-06", "ordination": "1999-12-27"}'::jsonb, 20, true),
       (sec, '{"en": "", "ml": ""}'::jsonb, '{"en": "Fr. Tomy Thervalakattayil", "ml": ""}'::jsonb, '{"profession": "1995-12-05", "ordination": "1994-12-27"}'::jsonb, 30, true),
       (sec, '{"en": "", "ml": ""}'::jsonb, '{"en": "Fr. Jinsho Thottathikuzhy", "ml": ""}'::jsonb, '{"profession": "1995-12-06", "ordination": "1999-12-27"}'::jsonb, 40, true),
       (sec, '{"en": "", "ml": ""}'::jsonb, '{"en": "Fr. Boby Pannoorayil", "ml": ""}'::jsonb, '{"profession": "1995-12-06", "ordination": "1999-12-27"}'::jsonb, 50, true),
