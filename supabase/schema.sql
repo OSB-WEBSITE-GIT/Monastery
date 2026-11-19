@@ -108,7 +108,7 @@ create table if not exists public.sections (
   id            uuid primary key default gen_random_uuid(),
   slug          text not null unique,            -- used for #anchors
   kind          text not null check (kind in
-                ('hero','intro','tiles','story','stats','steps','horarium','events','members','creative',
+                ('hero','intro','tiles','story','stats','steps','horarium','events','members','creative','monks',
                  'news','gallery','cards','contact','text')),
   eyebrow       jsonb not null default '{}'::jsonb,
   title         jsonb not null default '{}'::jsonb,
@@ -236,7 +236,7 @@ do $$
 begin
   alter table public.sections drop constraint if exists sections_kind_check;
   alter table public.sections add constraint sections_kind_check check (kind in
-    ('hero','intro','tiles','story','stats','steps','horarium','events','members','creative','news','gallery','cards','contact','text','members','creative'));
+    ('hero','intro','tiles','story','stats','steps','horarium','events','members','creative','news','gallery','cards','contact','text','members','creative','monks'));
 end $$;
 
 -- Welcome verses: one is shown at random on the welcome screen (a visitor's first visit each day)
