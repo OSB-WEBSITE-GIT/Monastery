@@ -164,15 +164,16 @@
     <ol class="steps">${items(s).map((it) => `<li ${rowAttr("section_items", it)}>${T("span", "section_items", it.id, "title", it.title, "t")}${T("span", "section_items", it.id, "body", it.body, "d")}</li>`).join("")}</ol>${cta(s)}</div></section>`;
   R.cards = (s) => {
     const its = items(s), st = s.settings || {};
-    // the featured card shows the whole photo (not cropped) on the left, with the text on the right
-    const card = (it, cls = "") => `<div class="card ${cls}" ${rowAttr("section_items", it)}>${under ? T("span", "section_items", it.id, "label", it.label, "label") : ""}${PH(cls === "featured" ? "full" : st.photo === "portrait" ? "portrait" : "card", "section_items", it.id, "image_url", it.image_url, tr(it.title).v)}${cls === "featured" ? '<div class="card-text">' : ""}${under ? "" : T("span", "section_items", it.id, "label", it.label, "label")}${T("span", "section_items", it.id, "title", it.title, "t")}${T("div", "section_items", it.id, "body", it.body, "d", "rich")}${it.link ? `<a href="${esc(safeUrl(it.link))}"${ext(it.link)}>${esc(L("read_more"))} →</a>` : ""}${cls === "featured" ? "</div>" : ""}</div>`;
+    // the featured card shows a framed profile photo (same shape for everyone, repositioned with "Adjust photo") on the left, with the text on the right
+    const card = (it, cls = "") => `<div class="card ${cls}" ${rowAttr("section_items", it)}>${under ? T("span", "section_items", it.id, "label", it.label, "label") : ""}${PH(cls === "featured" ? "profile" : st.photo === "portrait" ? "portrait" : "card", "section_items", it.id, "image_url", it.image_url, tr(it.title).v)}${cls === "featured" ? '<div class="card-text">' : ""}${under ? "" : T("span", "section_items", it.id, "label", it.label, "label")}${T("span", "section_items", it.id, "title", it.title, "t")}${T("div", "section_items", it.id, "body", it.body, "d", "rich")}${it.link ? `<a href="${esc(safeUrl(it.link))}"${ext(it.link)}>${esc(L("read_more"))} →</a>` : ""}${cls === "featured" ? "</div>" : ""}</div>`;
     // "feature_first": the first card is shown large in the centre, the others below it
-    const feature = st.feature_first && its.length > 1;
+    // "feature_all": every card is shown large, one below the other, all with the same photo width
+    const all = !!st.feature_all, feature = all || (st.feature_first && its.length > 1);
     let under = false;   // cards below a featured one: role above the photo, name below
-    const list = feature ? its.slice(1) : its;
+    const list = all ? [] : feature ? its.slice(1) : its;
     return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${its.length ? head(s) : headNoBody(s)}
       ${its.length ? "" : `<div class="note">${T("div", "sections", s.id, "body", s.body, "", "rich") || esc(L("empty_cards"))}</div>`}
-      ${feature ? `<div class="card-feature">${card(its[0], "featured")}</div>` : ""}
+      ${feature ? (all ? its : [its[0]]).map((it) => `<div class="card-feature">${card(it, "featured")}</div>`).join("") : ""}
       ${list.length ? `<div class="cards ${st.photo === "portrait" ? "portrait" : ""} ${feature ? "under-feature" : ""}" data-more="${st.limit || 8}">${list.map((it) => { under = feature; const h = card(it); under = false; return h; }).join("")}</div>` : ""}
       ${cta(s)}</div></section>`;
   };

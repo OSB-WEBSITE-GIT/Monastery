@@ -415,7 +415,8 @@
       if (["members", "creative", "monks"].includes(r.kind)) return `<label class="cms-field" data-key="settings.limit" data-type="number"><span>How many to show before “View more”</span><input id="f-limit" type="number" min="1" max="48" value="${esc(st.limit || 6)}"></label>`;
       if (r.kind === "events" || r.kind === "news") return `<label class="cms-field" data-key="settings.limit" data-type="number"><span>How many to show</span><input id="f-limit" type="number" min="1" max="24" value="${esc(st.limit || (r.kind === "news" ? 3 : 6))}"></label>`;
       if (r.kind === "cards") return `<label class="cms-field" data-key="settings.photo" data-type="select"><span>Photo shape</span><select id="f-photo"><option value="wide" ${st.photo !== "portrait" ? "selected" : ""}>Wide (buildings, places)</option><option value="portrait" ${st.photo === "portrait" ? "selected" : ""}>Square portrait (people)</option></select></label>
-        <label class="cms-check" data-key="settings.feature_first" data-type="bool"><input type="checkbox" id="f-feature" ${st.feature_first ? "checked" : ""}> Show the first item large, in the centre, with the others below it</label>`;
+        <label class="cms-check" data-key="settings.feature_first" data-type="bool"><input type="checkbox" id="f-feature" ${st.feature_first ? "checked" : ""}> Show the first item large, in the centre, with the others below it</label>
+        <label class="cms-check" data-key="settings.feature_all" data-type="bool"><input type="checkbox" id="f-featureall" ${st.feature_all ? "checked" : ""}> Show every item large, one below the other, all with the same photo width (overrides the option above)</label>`;
       if (r.kind === "hero") return `<label class="cms-check" data-key="settings.show_now" data-type="bool"><input type="checkbox" id="f-shownow" ${st.show_now !== false ? "checked" : ""}> Show “Now at Mariamala” in the top bar</label>`;
       return "";
     }
