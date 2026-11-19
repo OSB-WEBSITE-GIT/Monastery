@@ -180,7 +180,7 @@
   }
 
   /* one light "Edit this section" button per section; everything opens the dashboard */
-  const ITEM_KINDS = { members: "member", creative: "work", tiles: "tile", story: "entry", stats: "figure", steps: "stage", cards: "card", contact: "address" };
+  const ITEM_KINDS = { members: "member", monks: "monk", creative: "work", tiles: "tile", story: "entry", stats: "figure", steps: "stage", cards: "card", contact: "address" };
   const MANAGED = { horarium: ["horarium", "timetable"], events: ["events", "events"], news: ["posts", "news"], gallery: ["albums", "gallery"], intro: ["verses", "verses"] };
   const MANAGED_LABEL = { horarium: "✎ Edit timetable", events: "✎ Edit feasts & events", news: "✎ Edit news", gallery: "✎ Edit gallery", intro: "✎ Edit verses" };
   function editButton(label, onClick, cls = "") {
@@ -214,7 +214,7 @@
     if (ok !== undefined || true) await OSB.reload();
     if ($("#cms-dash-wrap")) refreshDash();
   }
-  const KIND_INFO = { text: "Text block — heading and paragraphs", story: "Story — text with a photo or a list beside it", tiles: "Tiles — a row of short links", stats: "Figures — large numbers with labels", steps: "Steps — a numbered sequence", cards: "Cards — e.g. schools and colleges", contact: "Contact — addresses and phone numbers", horarium: "Daily timetable", events: "Calendar of feasts and events", news: "News & announcements", gallery: "Photo & video gallery", hero: "Large opening image with title", intro: "Opening scene: the statue turning to gold, with a verse", members: "New members — photo, name, profession or ordination", creative: "Creative corner — writing, art and films (video links)" };
+  const KIND_INFO = { text: "Text block — heading and paragraphs", story: "Story — text with a photo or a list beside it", tiles: "Tiles — a row of short links", stats: "Figures — large numbers with labels", steps: "Steps — a numbered sequence", cards: "Cards — e.g. schools and colleges", contact: "Contact — addresses and phone numbers", horarium: "Daily timetable", events: "Calendar of feasts and events", news: "News & announcements", gallery: "Photo & video gallery", hero: "Large opening image with title", intro: "Opening scene: the statue turning to gold, with a verse", members: "New members — photo, name, profession or ordination", monks: "Monks — a roster: name, date of profession, date of ordination", creative: "Creative corner — writing, art and films (video links)" };
   function addSectionDialog() {
     const m = modal(`<h2 class="cms-h">Add a section</h2><form class="cms-form" id="ns">
       <label class="cms-field"><span>Type of section</span><select id="ns-kind">${Object.entries(KIND_INFO).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("")}</select></label>
@@ -254,7 +254,7 @@
       ["extra.type", "select", "Type of work", { options: [["writing", "Writing (article, poem, drama…)"], ["art", "Painting or drawing"], ["film", "Short film (video link only)"]] }],
       ["extra.author", "text", "Author", { help: "For children's work: first name and parish only." }],
       ["extra.consent", "bool", "Parent's consent received (children's work)"],
-      ["extra.date", "date", "Date"], ["extra.house", "text", "House"], ["visible", "bool", "Visible to visitors"]],
+      ["extra.date", "date", "Date"], ["extra.house", "text", "House"], ["extra.profession", "date", "Date of profession"], ["extra.ordination", "date", "Date of ordination"], ["extra.late", "bool", "Late (deceased): shown with a cross"], ["visible", "bool", "Visible to visitors"]],
     menu_items: () => [["label", "i18n", "Menu text"], ["target", "target", "Goes to"],
       ["parent_id", "select", "Show under", { options: [["", "— Top level —"], ...S.db.menu_items.filter((m) => !m.parent_id).map((m) => [m.id, plain(trv(m.label))])] }],
       ["visible", "bool", "Visible to visitors"]],
@@ -344,6 +344,7 @@
     if (table === "posts") return `${r.published_on}${r.pinned ? " · pinned" : ""}`;
     if (table === "verses") return plain(trv(r.reference));
     if (table === "albums") return `${S.db.media_items.filter((m) => m.album_id === r.id).length} items`;
+    if (table === "section_items" && r.extra && (r.extra.profession || r.extra.ordination)) return [plain(trv(r.label)), r.extra.profession ? "Profession " + r.extra.profession.slice(0, 4) : "", r.extra.ordination ? "Ordination " + r.extra.ordination.slice(0, 4) : "", r.extra.late ? "Late" : ""].filter(Boolean).join(" · ");
     if (table === "section_items") return plain(trv(r.label));
     if (table === "media_items") return r.kind;
     return "";
@@ -427,7 +428,7 @@
       if (r.kind === "story") return `<label class="cms-field" data-key="settings.layout" data-type="select"><span>${esc(label)}</span><select id="f-layout"><option value="image" ${st.layout !== "list" ? "selected" : ""}>Photo with the text; items shown as a timeline</option><option value="list" ${st.layout === "list" ? "selected" : ""}>List of items beside the text</option></select></label>
         <label class="cms-field" data-key="settings.photo_position" data-type="select"><span>Photo position</span><select id="f-photo_position"><option value="above" ${st.photo_position !== "beside" ? "selected" : ""}>Above the text, full width (after the heading)</option><option value="beside" ${st.photo_position === "beside" ? "selected" : ""}>Beside the text</option></select><small>Changing this changes the photo's frame shape; use Adjust afterwards to check what shows.</small></label>
         <label class="cms-check" data-key="settings.title_on_photo" data-type="bool"><input type="checkbox" id="f-titlephoto" ${st.title_on_photo !== false ? "checked" : ""}> Show the heading on the photo (when the photo is above the text)</label>`;
-      if (["members", "creative"].includes(r.kind)) return `<label class="cms-field" data-key="settings.limit" data-type="number"><span>How many to show before “View more”</span><input id="f-limit" type="number" min="1" max="48" value="${esc(st.limit || 6)}"></label>`;
+      if (["members", "creative", "monks"].includes(r.kind)) return `<label class="cms-field" data-key="settings.limit" data-type="number"><span>How many to show before “View more”</span><input id="f-limit" type="number" min="1" max="48" value="${esc(st.limit || 6)}"></label>`;
       if (r.kind === "events" || r.kind === "news") return `<label class="cms-field" data-key="settings.limit" data-type="number"><span>How many to show</span><input id="f-limit" type="number" min="1" max="24" value="${esc(st.limit || (r.kind === "news" ? 3 : 6))}"></label>`;
       if (r.kind === "cards") return `<label class="cms-field" data-key="settings.photo" data-type="select"><span>Photo shape</span><select id="f-photo"><option value="wide" ${st.photo !== "portrait" ? "selected" : ""}>Wide (buildings, places)</option><option value="portrait" ${st.photo === "portrait" ? "selected" : ""}>Square portrait (people)</option></select></label>
         <label class="cms-check" data-key="settings.feature_first" data-type="bool"><input type="checkbox" id="f-feature" ${st.feature_first ? "checked" : ""}> Show the first item large, in the centre, with the others below it</label>`;
@@ -506,15 +507,17 @@
       const sec = rowOf("sections", r.section_id) || {};
       const keep = { tiles: ["label", "title", "body", "link"], story: sec.settings && sec.settings.layout === "list" ? ["title", "body"] : ["label", "title"], stats: ["label", "title"], steps: ["title", "body"], cards: ["label", "title", "body", "image_url", "link"], contact: ["title", "body", "extra.phone", "extra.email"],
         members: ["title", "label", "extra.date", "extra.house", "image_url"],
+        monks: ["title", "label", "extra.profession", "extra.ordination", "extra.late", "image_url"],
         creative: ["extra.type", "label", "title", "extra.author", "body", "image_url", "link", "extra.consent"] }[sec.kind];
       if (keep) fields = keep.map((k) => fields.find((f) => f[0] === k)).filter(Boolean).concat(fields.filter((f) => f[0] === "visible"));   // in the order listed
       const RENAME = { members: { title: "Name", label: "Event (first profession, solemn profession or ordination)", image_url: "Photo" },
+        monks: { title: "Name (e.g. Fr. Thomas Chanaparayil)", label: "Role (optional: Superior, Vice-prior …)", image_url: "Photo (optional)" },
         creative: { label: "Kind (e.g. Poem, Article, Drama, Painting, Short film)", body: "Text (for writing)", image_url: "Picture (for paintings and drawings)", link: "Video link (YouTube) for films" } }[sec.kind];
       if (RENAME) fields = fields.map((f) => (RENAME[f[0]] ? [f[0], f[1], RENAME[f[0]], f[3]] : f));
     }
     // New members / Creative corner: the section itself has only a heading and a short introduction; each person or work is an item
-    if (table === "sections" && ["members", "creative"].includes(r.kind)) fields = fields.filter(([k]) => ["slug", "kind", "eyebrow", "title", "body", "settings", "visible"].includes(k))
-      .map((f) => (f[0] === "body" ? ["body", "rich", "Short introduction (optional). Add each " + (r.kind === "members" ? "person" : "work") + " below, under “Items in this section”."] : f));
+    if (table === "sections" && ["members", "creative", "monks"].includes(r.kind)) fields = fields.filter(([k]) => ["slug", "kind", "eyebrow", "title", "body", "settings", "visible"].includes(k))
+      .map((f) => (f[0] === "body" ? ["body", "rich", "Short introduction (optional). Add each " + ({ members: "person", monks: "monk" }[r.kind] || "work") + " below, under “Items in this section”."] : f));
     // show only the fields this type of section really displays on the page (a photo or button the page never shows only confuses)
     if (table === "sections" && r.kind !== "intro") {
       const usesPhoto = ["hero", "story"].includes(r.kind), usesButton = ["hero", "text", "story", "steps", "cards"].includes(r.kind);

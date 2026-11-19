@@ -243,6 +243,24 @@ html[lang="ml"] .news-row .t{font-family:inherit;font-size:1.08rem}
 .member .t{font-family:var(--f-display);font-size:1.25rem;font-weight:600;line-height:1.2}
 .mb-ev{font-family:var(--f-label);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
 .mb-house{color:var(--ink-soft);font-size:.95rem}
+/* Monks: a roster, name | profession | ordination (stacks on phones) */
+.monks{display:grid;margin-top:.5rem}
+.monk{display:grid;grid-template-columns:minmax(0,2.4fr) minmax(0,1fr) minmax(0,1fr);gap:.5rem 1.5rem;align-items:center;padding:.75rem .25rem;border-bottom:1px solid var(--rule)}
+.mk-th{font-family:var(--f-label);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);border-bottom:2px solid var(--accent);padding-block:.5rem}
+.mk-name{display:flex;align-items:center;gap:.9rem;min-width:0}
+.mk-name .ph{width:clamp(44px,5vw,56px);flex:none;border:1px solid var(--rule)}
+.mk-who{display:flex;flex-wrap:wrap;align-items:baseline;gap:.15rem .6rem;min-width:0}
+.monk .t{font-family:var(--f-display);font-size:1.2rem;font-weight:600;line-height:1.25}
+.mk-role,.mk-late{font-family:var(--f-label);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.mk-late,.mk-cross,.is-late .t{color:var(--ink-soft)}
+.mk-cross{font-size:1.05rem}
+.mk-date{color:var(--ink-soft);font-size:1rem;font-variant-numeric:tabular-nums}
+@media (max-width:640px){
+  .mk-th{display:none}
+  .monk{grid-template-columns:1fr 1fr;padding-block:.9rem}
+  .mk-name{grid-column:1/-1}
+  .mk-date::before{content:attr(data-label);display:block;font-family:var(--f-label);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+}
 /* creative corner */
 .cr-tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem}
 .cr-tabs button{font:inherit;font-family:var(--f-label);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:999px;padding:.4rem 1rem;cursor:pointer}

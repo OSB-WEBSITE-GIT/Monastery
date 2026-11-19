@@ -8,7 +8,7 @@
   /* Links: only web, e-mail, phone and on-site addresses are allowed. Anything else (e.g. javascript:) becomes "#". */
   function safeUrl(u) {
     const v = String(u ?? "").trim();
-    if (/^(https?:\/\/|mailto:|tel:)/i.test(v) || /^#[\w-]*$/.test(v) || /^\/(?!\/)/.test(v)) return v;
+    if (/^(https?:\/\/|mailto:|tel:)/i.test(v) || /^#[\w-]*$/.test(v) || /^\/(?![\/\\])/.test(v)) return v;
     return "#";
   }
   OSB.safeUrl = safeUrl;
@@ -264,6 +264,24 @@
         <div class="mb-text">${T("span", "section_items", it.id, "title", it.title, "t")}
           <span class="mb-ev">${esc(tr(it.label).v)}${x.date ? `${tr(it.label).v ? " · " : ""}${esc(fmtDate(x.date))}` : ""}</span>
           ${x.house ? `<span class="mb-house">${esc(x.house)}</span>` : ""}</div></div>`; }).join("")}</div>` : `<p class="muted">${S.lang === "ml" ? "ഉടൻ ചേർക്കും." : "Coming soon."}</p>`}</div></section>`;
+  };
+
+  /* monks: the roster of the community. Name | profession | ordination, in the order set in the dashboard.
+     Dates of birth are never shown (or stored). A late member is marked with a cross.
+     The heading row is the first child of the list, so "View more" counts it: limit + 1. */
+  const fmtShort = (d) => (d ? new Date(d + "T00:00:00").toLocaleDateString(S.lang === "ml" ? "ml-IN" : "en-IN", { day: "numeric", month: "short", year: "numeric" }) : "");
+  R.monks = (s) => {
+    const its = items(s), ml = S.lang === "ml";
+    const col = ml ? ["പേര്", "വ്രതവാഗ്ദാനം", "തിരുപ്പട്ടം"] : ["Name", "Profession", "Ordination"], late = ml ? "പരേതൻ" : "Late";
+    const row = (it) => { const x = it.extra || {}, role = tr(it.label).v;
+      return `<div class="monk${x.late ? " is-late" : ""}" role="row" ${rowAttr("section_items", it)}>
+        <div class="mk-name" role="cell">${it.image_url ? PH("portrait", "section_items", it.id, "image_url", it.image_url, tr(it.title).v) : ""}
+          <span class="mk-who">${x.late ? `<span class="mk-cross" aria-hidden="true">†</span>` : ""}${T("span", "section_items", it.id, "title", it.title, "t")}${role ? `<span class="mk-role">${esc(role)}</span>` : ""}${x.late ? `<span class="mk-late">${late}</span>` : ""}</span></div>
+        <div class="mk-date" role="cell" data-label="${col[1]}">${esc(fmtShort(x.profession)) || "—"}</div>
+        <div class="mk-date" role="cell" data-label="${col[2]}">${esc(fmtShort(x.ordination)) || "—"}</div></div>`; };
+    return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${head(s)}
+      ${its.length ? `<div class="monks" role="table" aria-label="${esc(tr(s.title).v)}" data-more="${((s.settings || {}).limit || 48) + 1}">
+        <div class="monk mk-th" role="row">${col.map((c) => `<div role="columnheader">${c}</div>`).join("")}</div>${its.map(row).join("")}</div>` : `<p class="muted">${ml ? "ഉടൻ ചേർക്കും." : "Coming soon."}</p>`}</div></section>`;
   };
 
   /* creative corner: writing, art and films (video links only); filter tabs; open to read or view */
