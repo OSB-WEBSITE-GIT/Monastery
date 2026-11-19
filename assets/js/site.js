@@ -267,16 +267,16 @@
   };
 
   /* monks: the roster of the community. Name | profession | ordination, in the order set in the dashboard.
-     Dates of birth are never shown (or stored). A late member is marked with a cross.
+     Dates of birth are never shown (or stored). A late member is written as "Fr. Name (Late)" in the name.
      The heading row is the first child of the list, so "View more" counts it: limit + 1. */
   const fmtShort = (d) => (d ? new Date(d + "T00:00:00").toLocaleDateString(S.lang === "ml" ? "ml-IN" : "en-IN", { day: "numeric", month: "short", year: "numeric" }) : "");
   R.monks = (s) => {
     const its = items(s), ml = S.lang === "ml";
-    const col = ml ? ["പേര്", "വ്രതവാഗ്ദാനം", "തിരുപ്പട്ടം"] : ["Name", "Profession", "Ordination"], late = ml ? "പരേതൻ" : "Late";
+    const col = ml ? ["പേര്", "വ്രതവാഗ്ദാനം", "തിരുപ്പട്ടം"] : ["Name", "Profession", "Ordination"];
     const row = (it) => { const x = it.extra || {}, role = tr(it.label).v;
-      return `<div class="monk${x.late ? " is-late" : ""}" role="row" ${rowAttr("section_items", it)}>
+      return `<div class="monk" role="row" ${rowAttr("section_items", it)}>
         <div class="mk-name" role="cell">${it.image_url ? PH("portrait", "section_items", it.id, "image_url", it.image_url, tr(it.title).v) : ""}
-          <span class="mk-who">${x.late ? `<span class="mk-cross" aria-hidden="true">†</span>` : ""}${T("span", "section_items", it.id, "title", it.title, "t")}${role ? `<span class="mk-role">${esc(role)}</span>` : ""}${x.late ? `<span class="mk-late">${late}</span>` : ""}</span></div>
+          <span class="mk-who">${T("span", "section_items", it.id, "title", it.title, "t")}${role ? `<span class="mk-role">${esc(role)}</span>` : ""}</span></div>
         <div class="mk-date" role="cell" data-label="${col[1]}">${esc(fmtShort(x.profession)) || "—"}</div>
         <div class="mk-date" role="cell" data-label="${col[2]}">${esc(fmtShort(x.ordination)) || "—"}</div></div>`; };
     return `<section class="block" id="${esc(s.slug)}" data-section="${s.id}"><div class="wrap">${head(s)}

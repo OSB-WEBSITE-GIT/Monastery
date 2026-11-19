@@ -215,21 +215,6 @@
     if ($("#cms-dash-wrap")) refreshDash();
   }
   const KIND_INFO = { text: "Text block — heading and paragraphs", story: "Story — text with a photo or a list beside it", tiles: "Tiles — a row of short links", stats: "Figures — large numbers with labels", steps: "Steps — a numbered sequence", cards: "Cards — e.g. schools and colleges", contact: "Contact — addresses and phone numbers", horarium: "Daily timetable", events: "Calendar of feasts and events", news: "News & announcements", gallery: "Photo & video gallery", hero: "Large opening image with title", intro: "Opening scene: the statue turning to gold, with a verse", members: "New members — photo, name, profession or ordination", monks: "Monks — a roster: name, date of profession, date of ordination", creative: "Creative corner — writing, art and films (video links)" };
-  function addSectionDialog() {
-    const m = modal(`<h2 class="cms-h">Add a section</h2><form class="cms-form" id="ns">
-      <label class="cms-field"><span>Type of section</span><select id="ns-kind">${Object.entries(KIND_INFO).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("")}</select></label>
-      <label class="cms-field"><span>Heading (English)</span><input id="ns-title" required></label>
-      <div class="cms-actions"><button class="cms-btn primary">Add section</button><button type="button" class="cms-btn link" data-c>Cancel</button></div></form>`);
-    m.el.querySelector("[data-c]").onclick = m.close;
-    m.el.querySelector("#ns").onsubmit = async (e) => {
-      e.preventDefault(); const title = m.el.querySelector("#ns-title").value.trim(); const kind = m.el.querySelector("#ns-kind").value;
-      let slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "section"; const base = slug; let n = 2;
-      while (S.db.sections.some((s) => s.slug === slug)) slug = `${base}-${n++}`;
-      m.close();
-      const row = await run(() => OSB.store.insert("sections", { slug, kind, title: { en: title, ml: "" }, eyebrow: { en: "", ml: "" }, body: { en: "", ml: "" }, image_caption: { en: "", ml: "" }, cta_label: { en: "", ml: "" }, settings: kind === "story" ? { layout: "image" } : {}, sort: Math.max(0, ...S.db.sections.map((s) => s.sort)) + 10, visible: true }), "Section added at the end of the page");
-      if (row) { await OSB.reload(); dashboard("sections", row.id); }
-    };
-  }
 
   OSB.afterRender = function () {
     document.body.classList.toggle("cms-editing", S.editing);
@@ -254,7 +239,7 @@
       ["extra.type", "select", "Type of work", { options: [["writing", "Writing (article, poem, drama…)"], ["art", "Painting or drawing"], ["film", "Short film (video link only)"]] }],
       ["extra.author", "text", "Author", { help: "For children's work: first name and parish only." }],
       ["extra.consent", "bool", "Parent's consent received (children's work)"],
-      ["extra.date", "date", "Date"], ["extra.house", "text", "House"], ["extra.profession", "date", "Date of profession"], ["extra.ordination", "date", "Date of ordination"], ["extra.late", "bool", "Late (deceased): shown with a cross"], ["visible", "bool", "Visible to visitors"]],
+      ["extra.date", "date", "Date"], ["extra.house", "text", "House"], ["extra.profession", "date", "Date of profession"], ["extra.ordination", "date", "Date of ordination"], ["visible", "bool", "Visible to visitors"]],
     menu_items: () => [["label", "i18n", "Menu text"], ["target", "target", "Goes to"],
       ["parent_id", "select", "Show under", { options: [["", "— Top level —"], ...S.db.menu_items.filter((m) => !m.parent_id).map((m) => [m.id, plain(trv(m.label))])] }],
       ["visible", "bool", "Visible to visitors"]],
@@ -344,7 +329,7 @@
     if (table === "posts") return `${r.published_on}${r.pinned ? " · pinned" : ""}`;
     if (table === "verses") return plain(trv(r.reference));
     if (table === "albums") return `${S.db.media_items.filter((m) => m.album_id === r.id).length} items`;
-    if (table === "section_items" && r.extra && (r.extra.profession || r.extra.ordination)) return [plain(trv(r.label)), r.extra.profession ? "Profession " + r.extra.profession.slice(0, 4) : "", r.extra.ordination ? "Ordination " + r.extra.ordination.slice(0, 4) : "", r.extra.late ? "Late" : ""].filter(Boolean).join(" · ");
+    if (table === "section_items" && r.extra && (r.extra.profession || r.extra.ordination)) return [plain(trv(r.label)), r.extra.profession ? "Profession " + r.extra.profession.slice(0, 4) : "", r.extra.ordination ? "Ordination " + r.extra.ordination.slice(0, 4) : ""].filter(Boolean).join(" · ");
     if (table === "section_items") return plain(trv(r.label));
     if (table === "media_items") return r.kind;
     return "";
@@ -386,7 +371,6 @@
     const host = opts.host || p; host.innerHTML = html;
     const addBtn = host.querySelector("[data-add]"); if (addBtn) addBtn.onclick = async () => {
       if (opts.onAdd) return opts.onAdd();
-      if (table === "sections") return addSectionDialog();
       const row = await run(() => OSB.store.insert(table, DEF[table]()), "Added"); if (!row) return;
       await OSB.reload(); D = { tab: table, id: row.id }; refreshDash();
     };
@@ -507,7 +491,7 @@
       const sec = rowOf("sections", r.section_id) || {};
       const keep = { tiles: ["label", "title", "body", "link"], story: sec.settings && sec.settings.layout === "list" ? ["title", "body"] : ["label", "title"], stats: ["label", "title"], steps: ["title", "body"], cards: ["label", "title", "body", "image_url", "link"], contact: ["title", "body", "extra.phone", "extra.email"],
         members: ["title", "label", "extra.date", "extra.house", "image_url"],
-        monks: ["title", "label", "extra.profession", "extra.ordination", "extra.late", "image_url"],
+        monks: ["title", "label", "extra.profession", "extra.ordination", "image_url"],
         creative: ["extra.type", "label", "title", "extra.author", "body", "image_url", "link", "extra.consent"] }[sec.kind];
       if (keep) fields = keep.map((k) => fields.find((f) => f[0] === k)).filter(Boolean).concat(fields.filter((f) => f[0] === "visible"));   // in the order listed
       const RENAME = { members: { title: "Name", label: "Event (first profession, solemn profession or ordination)", image_url: "Photo" },
